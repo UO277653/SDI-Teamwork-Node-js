@@ -1,4 +1,9 @@
 # sdi-entrega2-21
+
+## Workflow
+Para implementar una funcionalidad cread una rama a partir de master y cuando acabéis, hacéis una pull request y lo juntais.
+
+## Información de conexión base de datos
 BASE DE DATOS MONGODB
 Usuario:SDINODE21@gmail.com
 Contraseña:gc2dNAd6qBXTLuB
