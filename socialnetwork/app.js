@@ -16,6 +16,7 @@ const {MongoClient} = require("mongodb");
 const usersRepository = require("./repositories/usersRepository.js");
 usersRepository.init(app, MongoClient);
 require("./routes/users.js")(app, usersRepository);
+require("./routes/admin.js")(app, usersRepository);
 
 const url = 'mongodb+srv://admin:sdi@socialnetwork.ddcue.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
 app.set('connectionStrings', url);
