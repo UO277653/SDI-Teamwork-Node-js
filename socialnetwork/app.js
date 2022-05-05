@@ -9,6 +9,8 @@ var usersRouter = require('./routes/users');
 
 var app = express();
 
+app.set("pageLimit", 5);
+
 const {MongoClient} = require("mongodb");
 
 const usersRepository = require("./repositories/usersRepository.js");
