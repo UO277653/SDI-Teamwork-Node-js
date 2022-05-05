@@ -9,20 +9,22 @@ module.exports = function (app, publicationsRepository) {
 
     app.post('/publications/add', function (req, res) {
 
-
-
         let publication = {
             title: req.body.title,
-            text: req.body.text,
+            text: req.body.content,
             date: new Date(),
-            author: "tempAuthor"
+            author: req.session.user
         }
 
         publicationsRepository.insertPublication(publication).then(publicationId =>{
-            res.send("La publicación ("+req.body.text+") ha sido añadida");
+            res.send("La publicación ha sido añadida");
         }).catch(error => {
             res.send("Error al insertar la publicación");
         })
+
+
+
+
 
 
     });
