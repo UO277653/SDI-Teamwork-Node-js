@@ -9,6 +9,9 @@ module.exports = function (app, usersRepository) {
       filter = {$or:[{"email": condition}, {"name": condition}, {"surname": condition}]};
     }
 
+    // Not include admins
+    filter["role"] = {$ne: "admin"};
+
     let page = parseInt(req.query.page);
     if (typeof req.query.page === "undefined" || req.query.page === null || req.query.page === "0") {
       page = 1;

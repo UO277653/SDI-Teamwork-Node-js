@@ -36,10 +36,10 @@ module.exports = {
             const database = client.db("socialNetwork");
             const collectionName = 'users';
             const usersCollection = database.collection(collectionName);
-            const usersCollectionCount = await usersCollection.count();
             const cursor = usersCollection.find(filter, options).skip((page - 1) * limit).limit(limit);
             const users = await cursor.toArray();
-            const result = {users: users, total: usersCollectionCount};
+            const usersCount = users.length;
+            const result = {users: users, total: usersCount};
             return result;
         } catch(error) {
             throw(error);
