@@ -1,7 +1,18 @@
 module.exports = function (app, usersRepository) {
 
   app.get('/users', function (req, res) {
-    usersRepository.getUsers({}, {}).then(users => {
+    let filter = {};
+    let options = {};
+
+    if(req.query.search != null && typeof req.query.search != "undefined" && req.query.search != ""){
+      filter = {$or:[
+          {"email": {$regex: ".*" + req.query.search + ".*"}},
+          {"name": {$regex: ".*" + req.query.search + ".*"}},
+          {"surname": {$regex: ".*" + req.query.search + ".*"}}
+      ]};
+    }
+
+    usersRepository.getUsers(filter, options).then(users => {
       res.render('user/users.twig', {users: users});
     }).catch(error => {
       res.send("Se ha producido un error al listar los usuarios: " + error)
