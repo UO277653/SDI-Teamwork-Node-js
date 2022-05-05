@@ -11,12 +11,21 @@ var app = express();
 
 const {MongoClient} = require("mongodb");
 
+
+//--------------------------Repositories----------------------------------------
 const usersRepository = require("./repositories/usersRepository.js");
 usersRepository.init(app, MongoClient);
 require("./routes/users.js")(app, usersRepository);
 
+const publicationsRepository = require("./repositories/publicationsRepository.js");
+publicationsRepository.init(app, MongoClient);
+require("./routes/publications.js")(app, publicationsRepository);
+//--------------------------Repositories----------------------------------------
+
+//---------------------------Connection to MongoDB------------------------------
 const url = 'mongodb+srv://admin:sdi@socialnetwork.ddcue.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
 app.set('connectionStrings', url);
+//---------------------------Connection to MongoDB------------------------------
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
