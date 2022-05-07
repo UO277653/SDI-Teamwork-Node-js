@@ -1,4 +1,4 @@
-package notaneitor.pageobjects;
+package socialnetwork.pageobjects;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;

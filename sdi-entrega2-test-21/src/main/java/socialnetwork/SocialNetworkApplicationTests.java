@@ -1,27 +1,38 @@
-package notaneitor;
+package socialnetwork;
 
-import com.uniovi.notaneitor.pageobjects.*;
+import org.openqa.selenium.By;
+import socialnetwork.pageobjects.*;
 import org.junit.jupiter.api.*;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.springframework.boot.test.context.SpringBootTest;
+import socialnetwork.util.SeleniumUtils;
 
 import java.util.List;
 
-@SpringBootTest
 //Ordenamos las pruebas por la anotación @Order de cada método
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class NotaneitorApplicationTests {
-    //Para MACOSX
-    //static String PathFirefox = "/Applications/Firefox 2.app/Contents/MacOS/firefox-bin";
-    //static String Geckodriver = "/Users/delacal/selenium/geckodriver-v0.30.0-macos";
-    //Para Windows
-    static String Geckodriver = "C:\\Path\\geckodriver-v0.30.0-win64.exe";
-    static String Geckodriver = "C:\\Dev\\tools\\selenium\\geckodriver-v0.30.0-win64.exe";    //Común a Windows y a MACOSX
-    //Común a Windows y a MACOSX
-    static final String URL = "http://localhost:8090";
+    static String PathFirefox = "C:\\Program Files\\Mozilla Firefox\\firefox.exe";
+
+    // Jonas
+    // static String Geckodriver = "C:\\Users\\Alejandro\\Desktop\\SDI-2022\\software\\software\\geckodriver-v0.27.0-win64\\geckodriver.exe";
+
+    // Adrian
+    static String Geckodriver = "C:\\Users\\adria\\OneDrive\\Escritorio\\UNIVERSIDAD\\AÑO 3\\SEMESTRE 2\\Sistemas Distribuidos e Internet\\Laboratorio\\Lab5\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
+
+
+    //Sara
+    //static String Geckodriver = "D:\\UNI\\3º\\2º cuatri\\SDI\\Lab\\sesion05\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
+
+    //Diego
+    //static String Geckodriver = "C:\\Users\\dimar\\Desktop\\sdi\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
+
+    //Ari
+    //static String Geckodriver = "C:\\Users\\UO270119\\Desktop\\IIS (definitiva)\\3º - Tercero\\Segundo cuatri\\Sistemas Distribuidos e Internet\\Lab\\[materiales]\\5. Selenium\\PL-SDI-Sesión5-material\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
+
     static WebDriver driver = getDriver(PathFirefox, Geckodriver);
+    static String URL = "http://localhost:3000";
 
     public static WebDriver getDriver(String PathFirefox, String Geckodriver) {
         System.setProperty("webdriver.firefox.bin", PathFirefox);
@@ -57,12 +68,35 @@ class NotaneitorApplicationTests {
     }
 
     /**
-     * Here we write the tests, following the pattern speficied in the point 
+     * Here we write the tests, following the pattern speficied in the point "Pruebas automatizadas" of the PDF
+     * of the assignment.
      */
-//    @Test
-//    @Order(1)
-//    void PR01A() {
-//        PO_HomeView.checkWelcomeToPage(driver, PO_Properties.getSPANISH());
-//    }
+
+
+
+
+
+
+
+
+
+
+    /**
+     * 4. Listado de usuarios del sistema: admin
+     * Mostrar el listado de usuarios y comprobar que se muestran todos los que existen en el sistema
+     */
+    @Test
+    @Order(11)
+    void PR11() {
+
+        driver.navigate().to("localhost:3000/admin/list");
+        int elementos = 0;
+        for(int i = 0; i<1; i++){
+            elementos += PO_UserListView.countUsersOnPageAdmin(driver, i);
+        }
+
+        // TERMINAR CON ASSERT
+        Assertions.assertEquals(6, elementos);
+    }
 
 }

@@ -21,6 +21,11 @@ require("./routes/admin.js")(app, usersRepository);
 const url = 'mongodb+srv://admin:sdi@socialnetwork.ddcue.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
 app.set('connectionStrings', url);
 
+const adminUserRouter = require("./routes/adminUserRouter");
+// No borrar plz
+// app.use("/admin/list", adminUserRouter);
+// app.use("/admin/delete", adminUserRouter);
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'twig');
