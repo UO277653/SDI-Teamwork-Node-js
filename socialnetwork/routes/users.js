@@ -26,7 +26,7 @@ module.exports = function (app, usersRepository) {
     }
 
     //Surname
-    if (user.username === null || typeof user.username === 'undefined' ||user.username.length<5 ||user.username.length>24|| user.username.trim().length === 0){
+    if (user.surname === null || typeof user.surname === 'undefined' ||user.surname.length<5 ||user.surname.length>24|| user.surname.trim().length === 0){
       res.redirect("/users/signup" +
           "?message=Username must be between 5 and 24 characters. It cannot be empty"+
           "&messageType=alert-danger");
@@ -50,13 +50,13 @@ module.exports = function (app, usersRepository) {
     }
 
     //Password
-    if ( user.password != (req.body.passwordConfirm)){
+    if ( req.body.password != (req.body.passwordConfirm)){
       res.redirect("/users/signup" +
           "?message=Passwords do not match"+
           "&messageType=alert-danger");
       return;
     }
-    if (user.password === null || typeof user.password === 'undefined' ||user.password.length<4 ||user.password.length>24|| user.username.trim().length === 0){
+    if (req.body.password === null || typeof req.body.password === 'undefined' ||req.body.password.length<4 ||req.body.password.length>24|| req.body.password.trim().length === 0){
       res.redirect("/users/signup" +
           "?message=Password must be between 4 and 24 characters"+
           "&messageType=alert-danger");

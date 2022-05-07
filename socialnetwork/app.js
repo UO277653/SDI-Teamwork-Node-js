@@ -4,14 +4,16 @@ let path = require('path');
 let cookieParser = require('cookie-parser');
 let logger = require('morgan');
 
+var usersRouter = require('./routes/users');
 let app = express();
 
-
+let bodyParser = require('body-parser');
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 let crypto = require('crypto');
 //W1-singup
-app.set('clave','abcdefg');
-app.set('crypto',crypto);
+
 
 let indexRouter = require('./routes/index');
 
@@ -26,7 +28,8 @@ require("./routes/users.js")(app, usersRepository);
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'twig');
-
+app.set('clave','abcdefg');
+app.set('crypto',crypto);
 
 
 app.use(logger('dev'));
