@@ -43,6 +43,11 @@ const url = 'mongodb+srv://admin:sdi@socialnetwork.ddcue.mongodb.net/myFirstData
 app.set('connectionStrings', url);
 //---------------------------Connection to MongoDB------------------------------
 
+const adminUserRouter = require("./routes/adminUserRouter");
+// No borrar plz
+// app.use("/admin/list", adminUserRouter);
+// app.use("/admin/delete", adminUserRouter);
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'twig');
