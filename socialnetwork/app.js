@@ -14,17 +14,15 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 let crypto = require('crypto');
 //W1-singup
-
-
-let indexRouter = require('./routes/index');
-
 const { MongoClient } = require("mongodb");
+
+//---------------------------Connection to MongoDB------------------------------
 const url = 'mongodb+srv://admin:sdi@socialnetwork.ddcue.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
 app.set('connectionStrings', url);
-//W1-signup
-app.set("pageLimit", 5);
+//---------------------------Connection to MongoDB------------------------------
 
-const {MongoClient} = require("mongodb");
+//W1-signup
+app.set("pageLimit", 5)
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -34,11 +32,6 @@ app.use(function(req, res, next) {
   // Debemos especificar todas las headers que se aceptan. Content-Type , token
   next();
 });
-
-
-let bodyParser = require('body-parser');
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
 
 //--------------------------Repositories----------------------------------------
 const usersRepository = require("./repositories/usersRepository.js");
@@ -51,10 +44,7 @@ publicationsRepository.init(app, MongoClient);
 require("./routes/publications.js")(app, publicationsRepository);
 //--------------------------Repositories----------------------------------------
 
-//---------------------------Connection to MongoDB------------------------------
-const url = 'mongodb+srv://admin:sdi@socialnetwork.ddcue.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
-app.set('connectionStrings', url);
-//---------------------------Connection to MongoDB------------------------------
+
 
 const adminUserRouter = require("./routes/adminUserRouter");
 // No borrar plz
