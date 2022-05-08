@@ -1,0 +1,25 @@
+{% extends "layout.twig" %}
+{% block title %} Usuarios – Social Network {% endblock %}
+{% block main_container %}
+    <h2>Usuarios</h2>
+    <div class="table-responsive">
+        <table class="table table-hover" id="tableUsers">
+            <thead>
+            <tr>
+                <th scope="col">Email</th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Apellidos</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.email }}</td>
+                <td>{{ user.name }}</td>
+                <td>{{ user.surname }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
