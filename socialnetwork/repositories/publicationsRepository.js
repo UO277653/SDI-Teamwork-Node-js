@@ -28,6 +28,22 @@ module.exports = {
         } catch (error) {
             throw (error);
         }
+    },
+    getPublicationsPg: async function (filter, options, page) {
+        try {
+            const limit = 2;
+            const client = await this.mongoClient.connect(this.app.get('connectionStrings'));
+            const database = client.db("socialNetwork");
+            const collectionName = 'publications';
+            const publicationsCollection = database.collection(collectionName);
+            const publicationsCollectionCount = await publicationsCollection.count();
+            const cursor = publicationsCollection.find(filter, options).skip((page - 1) * limit).limit(limit)
+            const publications = await cursor.toArray();
+            const result = {publications: publications, total: publicationsCollectionCount};
+            return result;
+        } catch (error) {
+            throw (error);
+        }
     }
 
 };
