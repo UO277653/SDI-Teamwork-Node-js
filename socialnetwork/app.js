@@ -1,17 +1,28 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+let createError = require('http-errors');
+let express = require('express');
+let path = require('path');
+let cookieParser = require('cookie-parser');
+let logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+let app = express();
 
-var app = express();
+let bodyParser = require('body-parser');
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-app.set("pageLimit", 5);
+let crypto = require('crypto');
+//W1-singup
+const { MongoClient } = require("mongodb");
 
-const {MongoClient} = require("mongodb");
+//---------------------------Connection to MongoDB------------------------------
+const url = 'mongodb+srv://admin:sdi@socialnetwork.ddcue.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
+app.set('connectionStrings', url);
+//---------------------------Connection to MongoDB------------------------------
+
+//W1-signup
+app.set("pageLimit", 5)
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -21,11 +32,6 @@ app.use(function(req, res, next) {
   // Debemos especificar todas las headers que se aceptan. Content-Type , token
   next();
 });
-
-
-let bodyParser = require('body-parser');
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
 
 //--------------------------Repositories----------------------------------------
 const usersRepository = require("./repositories/usersRepository.js");
@@ -38,10 +44,7 @@ publicationsRepository.init(app, MongoClient);
 require("./routes/publications.js")(app, publicationsRepository);
 //--------------------------Repositories----------------------------------------
 
-//---------------------------Connection to MongoDB------------------------------
-const url = 'mongodb+srv://admin:sdi@socialnetwork.ddcue.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
-app.set('connectionStrings', url);
-//---------------------------Connection to MongoDB------------------------------
+
 
 const adminUserRouter = require("./routes/adminUserRouter");
 // No borrar plz
@@ -51,6 +54,9 @@ const adminUserRouter = require("./routes/adminUserRouter");
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'twig');
+app.set('clave','abcdefg');
+app.set('crypto',crypto);
+
 
 app.use(logger('dev'));
 app.use(express.json());

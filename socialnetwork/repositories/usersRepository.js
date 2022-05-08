@@ -2,8 +2,7 @@ module.exports = {
     mongoClient: null,
     app: null,
     init: function (app, mongoClient) {
-        this.mongoClient = mongoClient;
-        this.app = app;
+        this.mongoClient = mongoClient; this.app = app;
     },
     findUser: async function (filter, options) {
         try {
@@ -27,6 +26,18 @@ module.exports = {
             return result.insertedId;
         } catch (error) {
             throw (error);
+        }
+    },
+    getUsers: async function(filter, options) {
+        try {
+            const client = await this.mongoClient.connect(this.app.get('connectionStrings'));
+            const database = client.db("socialNetwork");
+            const collectionName = 'users';
+            const usersCollection = database.collection(collectionName);
+            const users = await usersCollection.find(filter, options).toArray();
+            return users;
+        } catch(error) {
+            throw(error);
         }
     },
     getUsersAdmin: async function(filter, options) {

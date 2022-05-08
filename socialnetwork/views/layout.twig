@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <title>>{% block title %} Social Network {% endblock %}</title>
   <meta charset="utf-8"/>
@@ -49,6 +49,7 @@
     let params = new URLSearchParams(location.search);
     let message = params.get("message");
     let messageType = params.get("messageType");
+
     if (message != null && message != "") {
       if (messageType == "") {
         messageType = 'alert-info';
@@ -57,6 +58,7 @@
               .append("<div class='alert " + messageType + "'>" + message + " </div>");
     }
   </script>
+
   <!-- Contenido -->
   {% block main_container %}
     <!-- Posible contenido por defecto -->
