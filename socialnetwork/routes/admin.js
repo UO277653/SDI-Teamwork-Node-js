@@ -1,3 +1,4 @@
+const {ObjectId} = require("mongodb");
 module.exports = function (app, usersRepository) {
 
     /**
@@ -14,6 +15,26 @@ module.exports = function (app, usersRepository) {
         }).catch(error => {
             res.send("Se ha producido un error al listar los usuarios: " + error)
         })
+    });
+
+    app.post('/admin/delete', function (req, res) {
+
+        for (var key in req.body) {
+            if (req.body.hasOwnProperty(key)) {
+                item = req.body[key];
+
+                let filter = {_id: ObjectId(item)};
+                usersRepository.deleteUser(filter, {}).then(result => {
+                    if (result == null || result.deletedCount == 0) {
+                        res.send("No se ha podido eliminar el usuario");
+                    } else {
+                        res.redirect("/admin/list");
+                    }
+                }).catch(error => {
+                    res.send("Se ha producido un error al intentar eliminar el usuario: " + error)
+                });
+            }
+        }
     });
 
 
