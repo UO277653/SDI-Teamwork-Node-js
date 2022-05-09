@@ -33,6 +33,13 @@ app.use(function(req, res, next) {
   next();
 });
 
+let expressSession = require('express-session');
+app.use(expressSession({
+  secret: 'abcdefg',
+  resave: true,
+  saveUninitialized: true
+}));
+
 //--------------------------Repositories----------------------------------------
 const usersRepository = require("./repositories/usersRepository.js");
 usersRepository.init(app, MongoClient);
