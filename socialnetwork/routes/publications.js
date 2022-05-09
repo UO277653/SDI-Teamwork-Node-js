@@ -13,8 +13,8 @@ module.exports = function (app, publicationsRepository) {
             title: req.body.title,
             text: req.body.content,
             date: new Date(),
-            //author: req.session.user
-            author: "tempAuthor"
+            author: req.session.user
+
         }
 
         publicationsRepository.insertPublication(publication).then(publicationId =>{
@@ -24,9 +24,13 @@ module.exports = function (app, publicationsRepository) {
         })
     });
 
-    app.get('/publications/list/:id', function (req, res) {
-        //let author = req.params.id;
-        let author = "tempAuthor";
+    app.get("/publications/listown", function (req, res) {
+        res.redirect("/publications/list/" + req.session.user)
+    });
+
+    app.get('/publications/list/:user', function (req, res) {
+        let author = req.params.user;
+
         let filter = {
             author: author
         };
@@ -39,12 +43,14 @@ module.exports = function (app, publicationsRepository) {
         publicationsRepository.getPublicationsPg(filter, options, page).then(result => {
 
             let lastPage = result.total / 4;
-            if (result.total % 4 > 0) {
+            if (result.total % 4 > 0) { // Sobran decimales
                 lastPage = lastPage + 1;
             }
-            let pages = [];
-            for (let i = 1; i <= lastPage +1 ; i++) {
-                pages.push(i);
+            let pages = []; // paginas mostrar
+            for (let i = page - 2; i <= page + 2; i++) {
+                if (i > 0 && i <= lastPage) {
+                    pages.push(i);
+                }
             }
 
             let response = {
