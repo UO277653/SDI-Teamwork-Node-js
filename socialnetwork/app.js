@@ -49,6 +49,10 @@ require("./routes/admin.js")(app, usersRepository);
 const publicationsRepository = require("./repositories/publicationsRepository.js");
 publicationsRepository.init(app, MongoClient);
 require("./routes/publications.js")(app, publicationsRepository);
+
+const messagesRepository = require("./repositories/messajesRepository.js");
+messagesRepository.init(app,MongoClient);
+require("./routes/api/socialNetworkApi")(app, messagesRepository);
 //--------------------------Repositories----------------------------------------
 
 

@@ -12,7 +12,7 @@ import java.util.List;
 
 //Ordenamos las pruebas por la anotación @Order de cada método
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class NotaneitorApplicationTests {
+class SocialNetworkApplicationTests {
     static String PathFirefox = "C:\\Program Files\\Mozilla Firefox\\firefox.exe";
 
     // Jonas
@@ -97,6 +97,27 @@ class NotaneitorApplicationTests {
 
         // TERMINAR CON ASSERT
         Assertions.assertEquals(6, elementos);
+    }
+
+    /**
+     * 12. Crear nueva publicación
+     * Datos válidos
+     */
+    @Test
+    @Order(24)
+    void PR24(){
+        PO_LoginView.login(driver, "nopublications@email.com", "123456");
+
+        driver.navigate().to("localhost:3000/publication/listown");
+        int publications = PO_PublicationView.countPubliactionsOnPage(driver, 0);
+        Assertions.assertTrue(publications == 0);
+        driver.navigate().to("localhost:8090/publication/add");
+        PO_PublicationView.fillAddPublicationForm(driver, "Dancing on the club", "Having fun with the besties, ;) ");
+
+        driver.navigate().to("localhost:8090/publication/listown");
+        publications = PO_PublicationView.countPubliactionsOnPage(driver, 0);
+        Assertions.assertTrue(publications == 1);
+
     }
 
 }
