@@ -76,7 +76,7 @@ module.exports = function (app, messagesRepository) {
 
     app.put("/api/messages/setAsRead/:id", function(req, res){
         try {
-            //let userName1 = req.body.userName1;
+            //let userName1;
             //let id = req.params.id;
 
             let userName1 = "prueba1@prueba1.com";
