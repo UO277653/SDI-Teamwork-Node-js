@@ -1,6 +1,6 @@
 const {ObjectId} = require("mongodb");
 
-module.exports = function (app, messagesRepository) {
+module.exports = function (app, messagesRepository, usersRepository, friendsRepository) {
 
     app.post("/api/messages/add", function(req, res){
         try {
@@ -114,6 +114,36 @@ module.exports = function (app, messagesRepository) {
             res.status(500);
             res.json({error: "Error when adding a message: " + e})
         }
+    });
+
+    app.get("/api/friends/list", function(req, res) {
+        let options = {projection: {_id: 0, password: 0}}
+        let filter = {
+            $or:[
+                {sender: req.session.user},
+                {receiver: req.session.user}
+            ],
+            status: "ACCEPTED"
+        };
+
+        friendsRepository.getRequests(filter, options).then(requests => {
+            let friendEmails = [];
+            requests.forEach(request => {
+                if(request.sender == req.session.user)
+                    friendEmails.push(request.receiver);
+                else
+                    friendEmails.push(request.sender);
+            });
+
+            filter = {email: {$in: friendEmails}};
+            usersRepository.getUsers(filter, options).then(users => {
+                res.status(200);
+                res.send({friends: users})
+            }).catch(error => {
+                res.status(500);
+                res.json({ error: "Se ha producido un error al recuperar los amigos." })
+            });
+        });
     });
 
 }
