@@ -147,26 +147,37 @@ module.exports = function (app, usersRepository, friendsRepository) {
             page = 1;
         }
 
-       friendsRepository.getFriends(filter, options, page).then(result => {
-           const limit = app.get("pageLimit");
-           let lastPage = result.total / limit;
-           if (result.total % limit > 0) { // Sobran decimales
-               lastPage = lastPage + 1;
-           }
-           let pages = []; // paginas mostrar
-           for (let i = page - 2; i <= page + 2; i++) {
-               if (i > 0 && i <= lastPage) {
-                   pages.push(i);
-               }
-           }
-           let response = {
-               friends: result.friends,
-               pages: pages,
-               currentPage: page
-           }
+       friendsRepository.getRequests(filter, options).then(requests => {
+           let friendEmails = [];
+           requests.forEach(request => {
+               if(request.sender == req.session.user)
+                   friendEmails.push(request.receiver);
+               else
+                   friendEmails.push(request.sender);
+           });
 
-           res.render('user/friends.twig', response);
-       })
+           filter = {email: {$in: friendEmails}};
+           usersRepository.getUsersPg(filter, options, page).then(result => {
+               const limit = app.get("pageLimit");
+               let lastPage = result.total / limit;
+               if (result.total % limit > 0) { // Sobran decimales
+                   lastPage = lastPage + 1;
+               }
+               let pages = []; // paginas mostrar
+               for (let i = page - 2; i <= page + 2; i++) {
+                   if (i > 0 && i <= lastPage) {
+                       pages.push(i);
+                   }
+               }
+               let response = {
+                   friends: result.users,
+                   pages: pages,
+                   currentPage: page
+               }
+
+               res.render('user/friends.twig', response);
+           });
+       });
     });
 
 }
