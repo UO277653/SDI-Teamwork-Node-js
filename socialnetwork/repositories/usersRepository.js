@@ -28,8 +28,9 @@ module.exports = {
             throw (error);
         }
     },
-    getUsers: async function(filter, options) {
+    getUsers: async function(filter, options, page) {
         try {
+            const limit = this.app.get("pageLimit");
             const client = await this.mongoClient.connect(this.app.get('connectionStrings'));
             const database = client.db("socialNetwork");
             const collectionName = 'users';
