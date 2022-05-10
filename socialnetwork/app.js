@@ -52,7 +52,7 @@ require("./routes/friends.js")(app, usersRepository, friendsRepository);
 
 const publicationsRepository = require("./repositories/publicationsRepository.js");
 publicationsRepository.init(app, MongoClient);
-require("./routes/publications.js")(app, publicationsRepository);
+require("./routes/publications.js")(app, publicationsRepository, friendsRepository);
 
 const messagesRepository = require("./repositories/messajesRepository.js");
 messagesRepository.init(app,MongoClient);
