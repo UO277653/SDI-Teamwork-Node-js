@@ -28,16 +28,30 @@ module.exports = {
             throw (error);
         }
     },
-    getUsers: async function(filter, options, page) {
+
+    getUsers: async function(filter, options) {
+        try {
+            const client = await this.mongoClient.connect(this.app.get('connectionStrings'));
+            const database = client.db("socialNetwork");
+            const collectionName = 'users';
+            const usersCollection = database.collection(collectionName);
+            const users = usersCollection.find(filter, options).toArray();
+            console.log(users);
+            return users;
+        } catch(error) {
+            throw(error);
+        }
+    },
+    getUsersPg: async function(filter, options, page) {
         try {
             const limit = this.app.get("pageLimit");
             const client = await this.mongoClient.connect(this.app.get('connectionStrings'));
             const database = client.db("socialNetwork");
             const collectionName = 'users';
             const usersCollection = database.collection(collectionName);
+            const usersCount = await usersCollection.count();
             const cursor = usersCollection.find(filter, options).skip((page - 1) * limit).limit(limit);
             const users = await cursor.toArray();
-            const usersCount = users.length;
             const result = {users: users, total: usersCount};
             return result;
         } catch(error) {

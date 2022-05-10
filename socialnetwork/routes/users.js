@@ -19,7 +19,7 @@ module.exports = function (app, usersRepository, friendsRepository) {
       page = 1;
     }
 
-    usersRepository.getUsers(filter, options, page).then(result => {
+    usersRepository.getUsersPg(filter, options, page).then(result => {
       const limit = app.get("pageLimit");
       let lastPage = result.total / limit;
       if (result.total % limit > 0) { // Sobran decimales

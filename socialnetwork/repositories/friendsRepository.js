@@ -57,5 +57,22 @@ module.exports = {
         } catch(error) {
             throw(error);
         }
+    },
+
+    getFriends: async function(filter, options, page) {
+        try {
+            const limit = this.app.get("pageLimit");
+            const client = await this.mongoClient.connect(this.app.get('connectionStrings'));
+            const database = client.db("socialNetwork");
+            const collectionName = 'friendRequests';
+            const usersCollection = database.collection(collectionName);
+            const cursor = usersCollection.find(filter, options).skip((page - 1) * limit).limit(limit);
+            const friends = await cursor.toArray();
+            const friendsCount = friends.length;
+            const result = {friends: friends, total: friendsCount};
+            return result;
+        } catch(error) {
+            throw(error);
+        }
     }
 };
