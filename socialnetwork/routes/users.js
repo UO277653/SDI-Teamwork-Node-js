@@ -1,6 +1,49 @@
 const {ObjectId} = require("mongodb");
 
 module.exports = function (app, usersRepository, friendsRepository) {
+  
+  app.get('/users', function (req, res) {
+    let filter = {};
+    let options = {};
+
+    if(req.query.search != null && typeof req.query.search != "undefined" && req.query.search != ""){
+      let condition = {$regex: ".*" + req.query.search + ".*"}
+      filter = {$or:[{"email": condition}, {"name": condition}, {"surname": condition}]};
+    }
+
+    // Not include admins
+    filter["role"] = {$ne: "admin"};
+
+    let page = parseInt(req.query.page);
+    if (typeof req.query.page === "undefined" || req.query.page === null || req.query.page === "0") {
+      page = 1;
+    }
+
+    usersRepository.getUsers(filter, options, page).then(result => {
+      const limit = app.get("pageLimit");
+      let lastPage = result.total / limit;
+      if (result.total % limit > 0) { // Sobran decimales
+        lastPage = lastPage + 1;
+      }
+      let pages = []; // paginas mostrar
+      for (let i = page - 2; i <= page + 2; i++) {
+        if (i > 0 && i <= lastPage) {
+          pages.push(i);
+        }
+      }
+      let response = {
+        users: result.users,
+        pages: pages,
+        currentPage: page
+      }
+
+      res.render('user/users.twig', response);
+    }).catch(error => {
+      res.send("Se ha producido un error al listar los usuarios: " + error)
+    })
+
+  });
+  
   app.get('/users/signup', function (req, res) {
     console.log("Access to signup form")
     res.render("signup.twig");
@@ -33,6 +76,7 @@ module.exports = function (app, usersRepository, friendsRepository) {
           "?message=Username must be between 5 and 24 characters. It cannot be empty"+
           "&messageType=alert-danger");
       return;
+
     }
 
     //Email
