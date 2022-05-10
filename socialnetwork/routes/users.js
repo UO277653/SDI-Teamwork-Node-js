@@ -1,4 +1,6 @@
-module.exports = function (app, usersRepository) {
+const {ObjectId} = require("mongodb");
+
+module.exports = function (app, usersRepository, friendsRepository) {
   app.get('/users/signup', function (req, res) {
     console.log("Access to signup form")
     res.render("signup.twig");
@@ -174,5 +176,49 @@ module.exports = function (app, usersRepository) {
     res.redirect("/users/login" +
         "?message=User successfully logged out"+
         "&messageType=alert-success");
+  });
+
+
+
+  /*
+  app.get('/users/user/:id', function (req, res) {
+    let filter = {_id: ObjectId(req.params.id)};
+    usersRepository.findUser(filter, {}).then(user => {
+      if (user == null){
+        res.redirect("/users");
+      } else {
+        console.log("user found! "+ user);
+        res.render("user/single-user.twig", {user: user, isFriend: false});
+      }
+    }).catch(error => {
+      res.redirect("/users");
+    })
+  });*/
+
+  app.get('/users/user/:id', function (req, res) {
+
+    let userId = ObjectId(req.params.id);
+    let filter = {_id: ObjectId(req.params.id)};
+    usersRepository.findUser(filter, {}).then(user => {
+      if (user == null){
+        res.redirect("/users");
+      } else {
+
+        let friendFilter = { // Requests sent to or received by our user
+          status: "ACCEPTED",
+          $or:[
+            {senderId: req.session.user._id, receiverId: ObjectId(req.params.id)},
+            {senderId: ObjectId(req.params.id), receiverId: req.session.user._id}
+          ]
+        };
+        friendsRepository.findRequest(friendFilter, {}).then(friendRequest => {
+          res.render("user/single-user.twig", {user: user, isFriend: friendRequest != null});
+        }).catch(error => {
+          res.render("user/single-user.twig", {user: user, isFriend: false});
+        });
+      }
+    }).catch(error => {
+      res.redirect("/users");
+    })
   });
 }

@@ -43,8 +43,12 @@ app.use(expressSession({
 //--------------------------Repositories----------------------------------------
 const usersRepository = require("./repositories/usersRepository.js");
 usersRepository.init(app, MongoClient);
-require("./routes/users.js")(app, usersRepository);
+const friendsRepository = require("./repositories/friendsRepository.js");
+friendsRepository.init(app, MongoClient);
+
+require("./routes/users.js")(app, usersRepository, friendsRepository);
 require("./routes/admin.js")(app, usersRepository);
+require("./routes/friends.js")(app, usersRepository, friendsRepository);
 
 const publicationsRepository = require("./repositories/publicationsRepository.js");
 publicationsRepository.init(app, MongoClient);
