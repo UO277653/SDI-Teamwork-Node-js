@@ -1,0 +1,59 @@
+{% extends "layout.twig" %}
+{% block title %} Friend requests {% endblock %}
+{% block main_container %}
+
+<h2>Received friendship requests</h2>
+<div class="row">
+    <table class="table table-hover" id="tableUsers"> <!-- tableFriends -->
+        <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Apellidos</th>
+            <th>Email</th>
+            <th class="col-md-1"></th>
+            <th class="col-md-1"></th>
+        </tr>
+        </thead>
+
+        <tbody>
+        {% for possibleFriend in possibleFriends %}
+            <tr>
+
+                <td>{{possibleFriend.otherUser.name}}</td>
+                <td>{{possibleFriend.otherUser.surname}}</td>
+                <td>{{possibleFriend.otherUser.email}}</td>
+
+                {% if possibleFriend.isForCurrentUser %}
+                <td>
+                    <form class="form-horizontal" method="post" action="/friends/accept/{{ possibleFriend.request._id }}" >
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <button type="submit" class="btn btn-primary">Accept</button>
+                            </div>
+                        </div>
+                    </form>
+                </td>
+                {% else %}
+                <td>C'mon Diego, you've sent this, silly</td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <!-- End of friends block -->
+</div>
+
+<!-- Pagination
+    <div class="row text-center">
+        <ul class="pagination">
+            {% for pagina in paginas %}
+                <li class="page-item" id="pi-{{ pagina }}">
+                    <a class="page-link" href="/friendships?pg={{ pagina }}">{{ pagina }}</a>
+                </li>
+            {% endfor %}
+            <script>
+                $("#pi-" + "{{ actual }}").addClass("active");
+            </script>
+        </ul>
+    </div> -->
+{% endblock %}
