@@ -197,7 +197,6 @@ module.exports = function (app, usersRepository, friendsRepository) {
 
   app.get('/users/user/:id', function (req, res) {
 
-    let userId = ObjectId(req.params.id);
     let filter = {_id: ObjectId(req.params.id)};
     usersRepository.findUser(filter, {}).then(user => {
       if (user == null){
@@ -207,8 +206,8 @@ module.exports = function (app, usersRepository, friendsRepository) {
         let friendFilter = { // Requests sent to or received by our user
           status: "ACCEPTED",
           $or:[
-            {senderId: req.session.user._id, receiverId: ObjectId(req.params.id)},
-            {senderId: ObjectId(req.params.id), receiverId: req.session.user._id}
+            {sender: req.session.user, receiver: user.email},
+            {sender: user.email, receiver: req.session.user}
           ]
         };
         friendsRepository.findRequest(friendFilter, {}).then(friendRequest => {

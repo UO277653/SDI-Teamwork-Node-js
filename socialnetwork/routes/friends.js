@@ -3,6 +3,33 @@ const {ObjectId} = require("mongodb");
 module.exports = function (app, usersRepository, friendsRepository) {
 
 
+    // To make our lives easier on the Twig side,
+    // we will create a collection of tuples that
+    // contain the actual friend request and the
+    // other user involved.
+    function _friendsListGenerateTuples(sessionUser, friendRequests, index, tupleCallback, onComplete) {
+        if (index >= friendRequests.length) {
+            onComplete();
+            return;
+        }
+        let friendReq = friendRequests[index];
+        let otherUserEmail = (friendReq.sender === sessionUser)
+            ? friendReq.receiver
+            : friendReq.sender;
+        let filter = {email: otherUserEmail};
+
+        usersRepository.findUser(filter, {}).then(otherUser => {
+            tupleCallback({
+                request: friendReq,
+                otherUser: otherUser,
+                isForCurrentUser: (friendReq.receiver === sessionUser)
+            });
+            _friendsListGenerateTuples(sessionUser, friendRequests, index+1, tupleCallback, onComplete);
+        }).catch(error => {
+            _friendsListGenerateTuples(sessionUser, friendRequests, index+1, tupleCallback, onComplete);
+        })
+    }
+
     app.get('/friends/list', function (req, res) {
 
         let filter = { // Requests sent to or received by our user
@@ -16,20 +43,15 @@ module.exports = function (app, usersRepository, friendsRepository) {
                 res.redirect("/users"); // TODO: error
                 return;
             }
-            // To make our lives easier on the Twig side,
-            // we will create a collection of tuples that
-            // contain the actual friend request and the
-            // other user involved.
-            let tuples= requests.map(function (friendReq, index, array) {
-                return {
-                    request: friendReq,
-                    otherUser: (friendReq.sender === req.session.user)
-                        ? friendReq.receiver
-                        : friendReq.sender
-                }
-            });
 
-            res.render("user/friendRequests.twig", {possibleFriends: tuples});
+            let tuples = [];
+            let tupleCallback = (tuple) => {
+                tuples.push(tuple);
+            };
+            _friendsListGenerateTuples(req.session.user, requests, 0, tupleCallback, () => {
+
+                res.render("user/friendRequests.twig", {possibleFriends: tuples});
+            });
 
         }).catch(error => {
             res.send("Se ha producido un error al listar las publicaciones del usuario:" + error)
@@ -44,23 +66,21 @@ module.exports = function (app, usersRepository, friendsRepository) {
             res.redirect("/users/signup" + "?message=User must be logged in."+ "&messageType=alert-danger");
             return;
         }
-        let friendId = ObjectId(req.params.id);
-        if (req.session.user._id === friendId) {
-            res.redirect("/users"); // TODO: error status - cannot send request to self
-            return;
-        }
-
-        let filter = {_id: friendId};
+        let filter = {_id: ObjectId(req.params.id)};
         usersRepository.findUser(filter, {}).then(user => {
             if (user == null){
                 res.redirect("/users");
                 return;
             }
+            if (req.session.user === user.email) {
+                res.redirect("/users"); // TODO: error status - cannot send request to self
+                return;
+            }
 
             let filter = { // Find if there are requests between these two users
                 $or:[
-                    {sender: req.session.user, receiver: user},
-                    {sender: user, receiver: req.session.user},
+                    {sender: req.session.user, receiver: user.email},
+                    {sender: user.email, receiver: req.session.user},
                 ]
             }
             friendsRepository.findRequest(filter, {}).then(existingRequest => {
@@ -71,8 +91,8 @@ module.exports = function (app, usersRepository, friendsRepository) {
 
                 let friendRequest = {
                     sender: req.session.user,
-                    receiver: user,
-                    status: "sent"
+                    receiver: user.email,
+                    status: "SENT"
                 };
                 friendsRepository.insertRequest(friendRequest).then(reqId => {
                     res.redirect("/users"); // TODO - success status

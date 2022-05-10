@@ -23,6 +23,19 @@
                 <td>{{possibleFriend.otherUser.surname}}</td>
                 <td>{{possibleFriend.otherUser.email}}</td>
 
+                {% if possibleFriend.isForCurrentUser %}
+                <td>
+                    <form class="form-horizontal" method="post" action="/friends/accept/{{ possibleFriend.request._id }}" >
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <button type="submit" class="btn btn-primary">Accept</button>
+                            </div>
+                        </div>
+                    </form>
+                </td>
+                {% else %}
+                <td>C'mon Diego, you've sent this, silly</td>
+                {% endif %}
             </tr>
         {% endfor %}
         </tbody>
