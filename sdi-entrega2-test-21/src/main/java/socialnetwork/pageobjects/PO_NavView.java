@@ -1,10 +1,10 @@
 package socialnetwork.pageobjects;
 
-import socialnetwork.util.SeleniumUtils;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import socialnetwork.util.*;
 
 import java.util.List;
 

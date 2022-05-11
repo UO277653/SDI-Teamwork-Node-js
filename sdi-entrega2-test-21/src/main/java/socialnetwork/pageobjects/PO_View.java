@@ -1,8 +1,9 @@
 package socialnetwork.pageobjects;
 
-import socialnetwork.util.SeleniumUtils;
+import socialnetwork.util.*;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import socialnetwork.pageobjects.*;
 
 import java.util.List;
 

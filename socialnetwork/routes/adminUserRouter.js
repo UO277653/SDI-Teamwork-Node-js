@@ -7,7 +7,7 @@ const adminUserRouter = express.Router();
  */
 adminUserRouter.use(function(req, res, next) {
     console.log("routerUsuarioSession");
-    if ( req.session.user == "admin" ) { // Check if user is admin
+    if ( req.session.user == "admin@email.com" ) { // Check if user is admin
         next();
     } else {
         console.log("va a: " + req.originalUrl);
@@ -15,5 +15,3 @@ adminUserRouter.use(function(req, res, next) {
     }
 });
 module.exports = adminUserRouter;
-
-// FALTA AÑADIRLO A app.js, NECESITO AUTENTICACIÓN
