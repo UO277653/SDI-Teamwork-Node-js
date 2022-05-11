@@ -33,8 +33,6 @@
             dataType: 'json',
             headers: {"token": token},
             success: function (response) {
-                console.log(user)
-                console.log(response)
                 friends = response.friends;
                 updateFriendsTable(friends);
             },
@@ -43,17 +41,62 @@
             }
         });
     }
+
+    let lastMessage;
+
     function updateFriendsTable(friends) {
+
+
+
         $("#friendsTableBody").empty(); // Vaciar la tabla
         for (i = 0; i < friends.length; i++) {
-            console.log(friends[i]);
+
+
+
             $("#friendsTableBody").append(
                 "<tr id=" + friends[i].email + ">" +
                 "<td>" + friends[i].email + "</td>" +
                 "<td>" + friends[i].name + "</td>" +
                 "<td>" + friends[i].surname + "</td>" +
+
                 "</tr>");
+
+            $.ajax({
+                url: URLbase + "/messages/conversation",
+                type: "POST",
+                async: false,
+                data: {userName1: "prueba1@prueba1.com",
+                    userName2: "prueba2@prueba2.com"},
+                dataType: 'json',
+                headers: {"token": token},
+                success: function (response) {
+
+                    if(response.result.isEmpty) {
+                        lastMessage = "";
+                    } else {
+                        lastMessage = response.result[0];
+
+                        $("#friendsTableBody").append(
+                            "<td><a onclick=chat(lastMessage)>" + lastMessage.date + " " + lastMessage.text + "</a></td>");
+                    }
+                },
+                error: function (error) {
+                    $("#main-container").load("widget-login.html");
+                }
+            });
         }
+    }
+    function chat(message){
+
+        if(user == message.sender){
+            Cookies.set('receiver', message.receiver);
+        } else {
+            Cookies.set('receiver', message.sender);
+        }
+        Cookies.set('email1', message.sender)
+        Cookies.set('email2', message.receiver)
+
+        $("#main-container").load("widget-chat.html");
     }
     loadFriends();
 </script>
