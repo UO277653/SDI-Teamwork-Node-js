@@ -8,6 +8,16 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 let app = express();
 
+let jwt=require('jsonwebtoken');
+app.set('jwt', jwt);
+let expressSession = require('express-session');
+
+app.use(expressSession({
+  secret: 'abcdefg',
+  resave: true,
+  saveUninitialized : true
+}))
+
 let bodyParser = require('body-parser');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -33,12 +43,16 @@ app.use(function(req, res, next) {
   next();
 });
 
-let expressSession = require('express-session');
-app.use(expressSession({
-  secret: 'abcdefg',
-  resave: true,
-  saveUninitialized: true
-}));
+
+const adminUserRouter = require("./routes/adminUserRouter");
+app.use("/admin/list", adminUserRouter);
+app.use("/admin/delete", adminUserRouter);
+
+const userTokenRouter = require("./routes/userTokenRouter");
+app.use("/api/messages/add", userTokenRouter);
+app.use("/api/messages/conversation", userTokenRouter);
+app.use("/api/messages/setAsRead/:id", userTokenRouter);
+
 
 //--------------------------Repositories----------------------------------------
 const usersRepository = require("./repositories/usersRepository.js");
@@ -47,24 +61,19 @@ const friendsRepository = require("./repositories/friendsRepository.js");
 friendsRepository.init(app, MongoClient);
 
 require("./routes/users.js")(app, usersRepository, friendsRepository);
-require("./routes/admin.js")(app, usersRepository);
+
 require("./routes/friends.js")(app, usersRepository, friendsRepository);
 
 const publicationsRepository = require("./repositories/publicationsRepository.js");
 publicationsRepository.init(app, MongoClient);
-require("./routes/publications.js")(app, publicationsRepository);
+require("./routes/publications.js")(app, publicationsRepository, friendsRepository);
 
 const messagesRepository = require("./repositories/messajesRepository.js");
 messagesRepository.init(app,MongoClient);
-require("./routes/api/socialNetworkApi")(app, messagesRepository);
+require("./routes/api/socialNetworkApi")(app, messagesRepository, usersRepository, friendsRepository);
+
+require("./routes/admin.js")(app, usersRepository, friendsRepository, publicationsRepository, messagesRepository);
 //--------------------------Repositories----------------------------------------
-
-
-
-const adminUserRouter = require("./routes/adminUserRouter");
-// No borrar plz
-// app.use("/admin/list", adminUserRouter);
-// app.use("/admin/delete", adminUserRouter);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

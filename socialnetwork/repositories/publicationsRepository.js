@@ -44,6 +44,18 @@ module.exports = {
         } catch (error) {
             throw (error);
         }
-    }
+    },
+    deletePublicationsOfUser: async function (filter, options) {
+        try {
+            const client = await this.mongoClient.connect(this.app.get('connectionStrings'));
+            const database = client.db("socialNetwork");
+            const collectionName = 'publications';
+            const publicationsCollection = database.collection(collectionName);
+            const result = await publicationsCollection.deleteMany(filter, options);
+            return result;
+        } catch (error) {
+            throw (error);
+        }
+    },
 
 };

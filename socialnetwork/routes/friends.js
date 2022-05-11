@@ -132,4 +132,52 @@ module.exports = function (app, usersRepository, friendsRepository) {
         })
     });
 
+    app.get("/friends", function(req, res) {
+       let options = {};
+       let filter = {
+           $or:[
+               {sender: req.session.user},
+               {receiver: req.session.user}
+           ],
+           status: "ACCEPTED"
+       };
+
+        let page = parseInt(req.query.page);
+        if (typeof req.query.page === "undefined" || req.query.page === null || req.query.page === "0") {
+            page = 1;
+        }
+
+       friendsRepository.getRequests(filter, options).then(requests => {
+           let friendEmails = [];
+           requests.forEach(request => {
+               if(request.sender == req.session.user)
+                   friendEmails.push(request.receiver);
+               else
+                   friendEmails.push(request.sender);
+           });
+
+           filter = {email: {$in: friendEmails}};
+           usersRepository.getUsersPg(filter, options, page).then(result => {
+               const limit = app.get("pageLimit");
+               let lastPage = result.total / limit;
+               if (result.total % limit > 0) { // Sobran decimales
+                   lastPage = lastPage + 1;
+               }
+               let pages = []; // paginas mostrar
+               for (let i = page - 2; i <= page + 2; i++) {
+                   if (i > 0 && i <= lastPage) {
+                       pages.push(i);
+                   }
+               }
+               let response = {
+                   friends: result.users,
+                   pages: pages,
+                   currentPage: page
+               }
+
+               res.render('user/friends.twig', response);
+           });
+       });
+    });
+
 }

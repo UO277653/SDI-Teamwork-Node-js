@@ -20,7 +20,7 @@
                 <td>{{ user.name }}</td>
                 <td>{{ user.surname }}</td>
                 {% if user.role != "admin" %}
-                    <td ><input type="checkbox" name="deleteBox" id="userid +{{ user._id }}" value="{{ user._id }}"/></td>
+                    <td ><input type="checkbox" name="deleteBox" id="{{ user.name }}" value="{{ user._id }}"/></td>
                 {% endif %}
             </tr>
             {% endfor %}

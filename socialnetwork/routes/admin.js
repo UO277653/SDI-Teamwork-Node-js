@@ -1,5 +1,6 @@
 const {ObjectId} = require("mongodb");
-module.exports = function (app, usersRepository) {
+
+module.exports = function (app, usersRepository, friendsRepository, publicationsRepository, messagesRepository) {
 
     /**
      * It was decided that it was more suitable to create a specific .js file for admin functionalities, due to the
@@ -11,7 +12,7 @@ module.exports = function (app, usersRepository) {
     app.get('/admin/list', function (req, res) {
 
         usersRepository.getUsersAdmin({}, {}).then(users => {
-            res.render('admin/single-user.twig', {users: users});
+            res.render('admin/users.twig', {users: users});
         }).catch(error => {
             res.send("Se ha producido un error al listar los usuarios: " + error)
         })
@@ -23,19 +24,98 @@ module.exports = function (app, usersRepository) {
             if (req.body.hasOwnProperty(key)) {
                 item = req.body[key];
 
-                let filter = {_id: ObjectId(item)};
-                usersRepository.deleteUser(filter, {}).then(result => {
-                    if (result == null || result.deletedCount == 0) {
-                        res.send("No se ha podido eliminar el usuario");
-                    } else {
-                        res.redirect("/admin/list");
+                if (item[0].length == 1) {
+                    let filter = {_id: ObjectId(item)};
+                    usersRepository.findUser(filter, {}).then( user => {
+                        let filterRequests = {
+                            $or:[
+                                {sender: user.email},
+                                {receiver: user.email}
+                            ]
+                        }
+                        friendsRepository.deleteFriendsOfUser(filterRequests, {});
+                        let filterPublications = {
+                            $or:[
+                                {author: user.email},
+                            ]
+                        }
+                        publicationsRepository.deletePublicationsOfUser(filterPublications, {});
+                        let filterMessages = {
+                            $or:[
+                                {sender: user.email},
+                                {receiver: user.email}
+                            ]
+                        }
+                        messagesRepository.deleteMessagesOfUser(filterMessages, {});
+                    }).then(
+                    usersRepository.deleteUser(filter, {}).then(result => {
+                        if (result == null || result.deletedCount == 0) {
+                            res.send("No se ha podido eliminar el usuario");
+                        } else {
+                            res.redirect("/admin/list");
+                        }
+                    }).catch(error => {
+                        res.send("Se ha producido un error al intentar eliminar el usuario: " + error)
+                    })
+                );
+
+                } else {
+
+                    let deletedIds = [];
+                    for (let i = 0; i < item.length; i++) {
+                            deletedIds.push(ObjectId(item[i]))
                     }
-                }).catch(error => {
-                    res.send("Se ha producido un error al intentar eliminar el usuario: " + error)
-                });
+                    let filter = {_id: {$in: deletedIds}};
+                    let options = { projection: { email : 1}}
+                    usersRepository.findUsers(filter, options).then( emails => {
+
+                    console.log(emails);
+
+                    deleteUsersData(emails).then(usersRepository.deleteUsers(filter, {}).then(result => {
+                            if (result == null || result.deletedCount == 0) {
+                                res.send("No se ha podido eliminar el usuario");
+                            } else {
+                                res.redirect("/admin/list");
+                            }
+                        }).catch(error => {
+                            res.send("Se ha producido un error al intentar eliminar el usuario: " + error)
+                        })
+                    );
+
+                    })
+                }
             }
         }
     });
+
+    async function deleteUsersData(emails) {
+
+        let emailsArray = [];
+        for (let i = 0; i < emails.length; i++) {
+            emailsArray.push(emails[i].email);
+        }
+
+        let filterRequests = {
+            $or: [
+                {sender: {$in: emailsArray}},
+                {receiver: {$in: emailsArray}}
+            ]
+        }
+        await friendsRepository.deleteFriendsOfUser(filterRequests, {});
+
+        let filterPublications = {author: {$in: emailsArray}};
+
+        await publicationsRepository.deletePublicationsOfUser(filterPublications, {});
+
+        let filterMessages = {
+            $or: [
+                {sender: {$in: emailsArray}},
+                {receiver: {$in: emailsArray}}
+            ]
+        }
+        await messagesRepository.deleteMessagesOfUser(filterMessages, {});
+
+    }
 
 
 

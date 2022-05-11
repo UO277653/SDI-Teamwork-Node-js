@@ -1,6 +1,6 @@
 const {ObjectId} = require("mongodb");
 
-module.exports = function (app, messagesRepository) {
+module.exports = function (app, messagesRepository, usersRepository, friendsRepository) {
 
     app.post("/api/messages/add", function(req, res){
         try {
@@ -113,6 +113,78 @@ module.exports = function (app, messagesRepository) {
         catch (e) {
             res.status(500);
             res.json({error: "Error when adding a message: " + e})
+        }
+    });
+
+    app.get("/api/friends/list", function(req, res) {
+        let options = {projection: {_id: 0, password: 0}}
+        let filter = {
+            $or:[
+                {sender: req.session.user},
+                {receiver: req.session.user}
+            ],
+            status: "ACCEPTED"
+        };
+
+        friendsRepository.getRequests(filter, options).then(requests => {
+            let friendEmails = [];
+            requests.forEach(request => {
+                if(request.sender == req.session.user)
+                    friendEmails.push(request.receiver);
+                else
+                    friendEmails.push(request.sender);
+            });
+
+            filter = {email: {$in: friendEmails}};
+            usersRepository.getUsers(filter, options).then(users => {
+                res.status(200);
+                res.send({friends: users})
+            }).catch(error => {
+                res.status(500);
+                res.json({ error: "Se ha producido un error al recuperar los amigos." })
+            });
+        });
+    });
+
+    app.post("/api/v1.0/users/login", function(req, res){
+        try{
+            let securePassword = app.get("crypto").createHmac('sha256', app.get('clave')).update(req.body.password).digest('hex');
+            let filter = {
+                email: req.body.email,
+                password: securePassword
+            }
+            let options = {};
+            usersRepository.findUser(filter, options).then(user => {
+                if (user == null){
+                    res.status(401); //unauthorized
+                    res.json({
+                        message: "Unauthorized user",
+                        authenticated: false
+                    })
+                } else {
+                    let token = app.get('jwt').sign(
+                        {user: user.email, time:Date.now()/1000},
+                        "secreto");
+                    res.status(200);
+                    res.json({
+                        message: "Authorized user",
+                        authenticated : true,
+                        token: token
+                    })
+                }
+            }).catch(error => {
+                res.status(401);
+                res.json({
+                    message: "Se ha producido un error al verificar credenciales",
+                    authenticated : false
+                })
+            })
+        } catch (e){
+            res.status(500);
+            res.json({
+                message: "Se ha producido un error al cerificar credenciales",
+                authenticated: false
+            })
         }
     });
 
