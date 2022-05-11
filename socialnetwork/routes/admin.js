@@ -20,11 +20,6 @@ module.exports = function (app, usersRepository, friendsRepository, publications
 
     app.post('/admin/delete', function (req, res) {
 
-        /*
-            se deben eliminar todos los
-            usuarios seleccionados, así como toda la información relativa a los mismos, véase: datos, publicaciones,
-            amistades, etcétera
-         */
         for (var key in req.body) {
             if (req.body.hasOwnProperty(key)) {
                 item = req.body[key];
@@ -32,7 +27,6 @@ module.exports = function (app, usersRepository, friendsRepository, publications
                 if (item[0].length == 1) {
                     let filter = {_id: ObjectId(item)};
                     usersRepository.findUser(filter, {}).then( user => {
-
                         let filterRequests = {
                             $or:[
                                 {sender: user.email},
@@ -40,14 +34,12 @@ module.exports = function (app, usersRepository, friendsRepository, publications
                             ]
                         }
                         friendsRepository.deleteFriendsOfUser(filterRequests, {});
-
                         let filterPublications = {
                             $or:[
                                 {author: user.email},
                             ]
                         }
                         publicationsRepository.deletePublicationsOfUser(filterPublications, {});
-
                         let filterMessages = {
                             $or:[
                                 {sender: user.email},
