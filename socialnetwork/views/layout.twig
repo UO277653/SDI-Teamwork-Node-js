@@ -34,13 +34,26 @@
               <br>
               <a href="/publications/listown">List my publications</a>
             </div>
+        </li>
 
+        <li id= "user-menu" class="nav-item dropdown" >
+          <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown"
+             aria-haspopup="true" aria-expanded="false">
+            Users
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a id="listUsersOption"class="dropdown-item" href="/users" >Lista de usuarios</a>
+          </div>
+        </li>
+
+        <li id="friendList" class="nav-item ">
+          <a class="nav-link" href="/friends">Friends</a>
         </li>
 
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li><a href="/users/signup"><span class="glyphicon glyphicon-user"></span> Signup</a></li>
-        <li><a href="/users/login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+        <li><a href="/users/login" id="login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
         <li><a href="/users/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
       </ul>
     </div>

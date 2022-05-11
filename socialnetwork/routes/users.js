@@ -14,6 +14,9 @@ module.exports = function (app, usersRepository, friendsRepository) {
     // Not include admins
     filter["role"] = {$ne: "admin"};
 
+    // Not include himself
+    filter["email"] = {$ne: req.session.user};
+
     let page = parseInt(req.query.page);
     if (typeof req.query.page === "undefined" || req.query.page === null || req.query.page === "0") {
       page = 1;
