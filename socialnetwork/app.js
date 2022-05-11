@@ -48,6 +48,12 @@ const adminUserRouter = require("./routes/adminUserRouter");
 app.use("/admin/list", adminUserRouter);
 app.use("/admin/delete", adminUserRouter);
 
+const userTokenRouter = require("./routes/userTokenRouter");
+app.use("/api/messages/add", userTokenRouter);
+app.use("/api/messages/conversation", userTokenRouter);
+app.use("/api/messages/setAsRead/:id", userTokenRouter);
+
+
 //--------------------------Repositories----------------------------------------
 const usersRepository = require("./repositories/usersRepository.js");
 usersRepository.init(app, MongoClient);
