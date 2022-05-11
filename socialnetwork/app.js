@@ -40,6 +40,10 @@ app.use(expressSession({
   saveUninitialized: true
 }));
 
+const adminUserRouter = require("./routes/adminUserRouter");
+app.use("/admin/list", adminUserRouter);
+app.use("/admin/delete", adminUserRouter);
+
 //--------------------------Repositories----------------------------------------
 const usersRepository = require("./repositories/usersRepository.js");
 usersRepository.init(app, MongoClient);
@@ -50,13 +54,6 @@ const publicationsRepository = require("./repositories/publicationsRepository.js
 publicationsRepository.init(app, MongoClient);
 require("./routes/publications.js")(app, publicationsRepository);
 //--------------------------Repositories----------------------------------------
-
-
-
-const adminUserRouter = require("./routes/adminUserRouter");
-// No borrar plz
-// app.use("/admin/list", adminUserRouter);
-// app.use("/admin/delete", adminUserRouter);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
