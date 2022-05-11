@@ -3,6 +3,7 @@ package socialnetwork;
 import com.mongodb.MongoException;
 import com.mongodb.client.*;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import socialnetwork.pageobjects.*;
 import org.junit.jupiter.api.*;
 import org.openqa.selenium.WebDriver;
@@ -11,6 +12,8 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import java.util.List;
+
+import static com.mongodb.client.model.Filters.eq;
 
 //Ordenamos las pruebas por la anotación @Order de cada método
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -39,6 +42,8 @@ class SocialNetworkApplicationTests {
     static MongoClient mongoClient;
     static MongoDatabase db;
 
+    static MongoCollection<Document> collection;
+
     public static WebDriver getDriver(String PathFirefox, String Geckodriver) {
         System.setProperty("webdriver.firefox.bin", PathFirefox);
         System.setProperty("webdriver.gecko.driver", Geckodriver);
@@ -49,7 +54,9 @@ class SocialNetworkApplicationTests {
     //Antes de la primera prueba
     @BeforeAll
     static public void begin() {
-
+        mongoClient = MongoClients.create(URI);
+        db = mongoClient.getDatabase("socialNetwork");
+        collection = db.getCollection("users");
 
     }
 
@@ -58,6 +65,8 @@ class SocialNetworkApplicationTests {
     static public void end() {
         //Cerramos el navegador al finalizar las pruebas
         driver.quit();
+//        driver.close();
+        mongoClient.close();
     }
 
     //Antes de cada prueba se navega al URL home de la aplicación
@@ -70,7 +79,6 @@ class SocialNetworkApplicationTests {
     @AfterEach
     public void tearDown() {
         driver.manage().deleteAllCookies();
-        //driver.close();
     }
 
     /**
@@ -80,55 +88,159 @@ class SocialNetworkApplicationTests {
 
 
     /**
-     * 1. Registro de usuario con datos válidos
+     * W1. Registro de usuario con datos válidos
      */
     @Test
     @Order(1)
-    void PR1(){
+    void PR01(){
+        long initNumberUsers = collection.countDocuments();
         PO_SignUpView.signup(driver, "sarap@uniovi.es", "Paco", "Perez", "123456", "123456");
         String text = "New user successfully registered";
         String str = driver.findElement(By.className("alert")).getText();
         Assertions.assertEquals(text, str);
+
+        Assertions.assertEquals(initNumberUsers+1, collection.countDocuments()); //one more user
+
+        collection.deleteOne(eq("email", "sarap@uniovi.es"));
     }
 
     /**
-     * 1. Registro de usuario con datos inválidos:
+     * W1. Registro de usuario con datos inválidos:
      * 		Campos vacíos (email, nombre, apellidos)
      */
     @Test
     @Order(2)
-    void PR2() { //TODO
+    void PR02() {
+        long initNumberUsers = collection.countDocuments();
         PO_SignUpView.signup(driver, "", "", "", "123456", "123456");
 
-        List<WebElement> result = PO_View.checkElementBy(driver, "text", "Sign Up");
-        Assertions.assertEquals("Sign Up" , result.get(0).getText());
+        Assertions.assertEquals(initNumberUsers, collection.countDocuments()); //no user was added
+
+        List<WebElement> elements = PO_View.checkElementBy(driver, "text", "Sign up");
+        Assertions.assertEquals("Sign up", elements.get(0).getText());
     }
 
     /**
-     * 1. Registro de usuario con datos inválidos
+     * W1. Registro de usuario con datos inválidos
      * 		repetición de contraseña inválida
      */
     @Test
     @Order(3)
-    void PR3() {
+    void PR03() {
+        long initNumberUsers = collection.countDocuments();
         PO_SignUpView.signup(driver, "sara@uniovi.com", "Paco", "Perez", "123456", "122222");
         String text = "Passwords do not match";
+        String str = driver.findElement(By.className("alert")).getText();
+        Assertions.assertEquals(text, str);
+        Assertions.assertEquals(initNumberUsers, collection.countDocuments());//no user was added
+    }
+
+    /**
+     * W1. Registro de usuario con datos inválidos
+     * 		email existente
+     */
+    @Test
+    @Order(4)
+    void PR04() {
+        long initNumberUsers = collection.countDocuments();
+
+        PO_SignUpView.signup(driver, "user01@email.com", "Paco", "Perez", "123456", "123456");
+
+        String text = "Email is already in use";
+        String str = driver.findElement(By.className("alert")).getText();
+        Assertions.assertEquals(text, str);
+
+        Assertions.assertEquals(initNumberUsers, collection.countDocuments());//no user was added
+    }
+
+    /**
+     * W2. Inicio de sesión con datos válidos
+     * 		como administrador
+     */
+    @Test
+    @Order(5)
+    void PR05() {
+        PO_LoginView.login(driver, "admin@email.com" ,"admin");
+
+        String text = "Admin successfully logged in";
         String str = driver.findElement(By.className("alert")).getText();
         Assertions.assertEquals(text, str);
     }
 
     /**
-     * 1. Registro de usuario con datos inválidos
-     * 		email existente
+     * W2. Inicio de sesión con datos válidos
+     * 		como administrador
      */
     @Test
-    @Order(4)
-    void PR4() {
-        PO_SignUpView.signup(driver, "sarap@uniovi.es", "Paco", "Perez", "123456", "123456");
+    @Order(6)
+    void PR06() {
+        PO_LoginView.login(driver, "user01@email.com" ,"user01");
 
-        String text = "Email is already in use";
+        String text = "User successfully logged in";
         String str = driver.findElement(By.className("alert")).getText();
         Assertions.assertEquals(text, str);
+    }
+
+    /**
+     * W2. Inicio de sesión con datos inválidos
+     * 		usuario estándar, email y contraseña vacios
+     */
+    @Test
+    @Order(7)
+    void PR07() {
+        PO_LoginView.login(driver, "" ,"");
+
+        //Se sigue en la vista de login (el h2)
+        Assertions.assertEquals("User login", driver.findElement(By.tagName("h2")).getText());
+    }
+
+    /**
+     * W2. Inicio de sesión con datos inválidos
+     * 		usuario estándar, email existente pero contraseña incorrecta
+     */
+    @Test
+    @Order(8)
+    void PR08() {
+        PO_LoginView.login(driver, "user01@email.com" ,"u");
+
+        String text = "Wrong email or password";
+        String str = driver.findElement(By.className("alert")).getText();
+        Assertions.assertEquals(text, str);
+    }
+
+    /**
+     * W3. Fin de sesión
+     * 		comprobar que redirige a login
+     */
+    @Test
+    @Order(9)
+    void PR09() {
+        //Loggin
+        PO_LoginView.login(driver, "user01@email.com" ,"user01");
+
+        String text = "User successfully logged in";
+        String str = driver.findElement(By.className("alert")).getText();
+        Assertions.assertEquals(text, str);
+
+        //logout
+        PO_LoginView.logout(driver);
+
+        text = "User successfully logged out";
+        str = driver.findElement(By.className("alert")).getText();
+        Assertions.assertEquals(text, str);
+
+        //Se redirecciona en la vista de login (el h2)
+        Assertions.assertEquals("User login", driver.findElement(By.tagName("h2")).getText());
+    }
+
+    /**
+     * W3. Fin de sesión
+     * 		comprobar que el boton de cerrar sesion no esta visible si el usuario no esta autenticado
+     */
+    @Test
+    @Order(10)
+    void PR10() {
+        Assertions.assertThrows(NoSuchElementException.class, ()->driver.findElement(By.id("logout-btn")));
     }
 
     /**

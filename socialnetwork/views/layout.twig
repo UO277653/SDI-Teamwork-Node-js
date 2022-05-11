@@ -39,9 +39,12 @@
 
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="/users/signup"><span class="glyphicon glyphicon-user"></span> Signup</a></li>
-        <li><a href="/users/login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
-        <li><a href="/users/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+        {% if session == null %}
+          <li><a id="signup-btn" href="/users/signup"><span class="glyphicon glyphicon-user"></span> Signup</a></li>
+          <li><a id="login-btn" href="/users/login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+        {% else %}
+          <li><a id="logout-btn" href="/users/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+        {% endif %}
       </ul>
     </div>
   </div>
