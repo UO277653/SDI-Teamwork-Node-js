@@ -1,4 +1,49 @@
-module.exports = function (app, usersRepository) {
+const {ObjectId} = require("mongodb");
+
+module.exports = function (app, usersRepository, friendsRepository) {
+  
+  app.get('/users', function (req, res) {
+    let filter = {};
+    let options = {};
+
+    if(req.query.search != null && typeof req.query.search != "undefined" && req.query.search != ""){
+      let condition = {$regex: ".*" + req.query.search + ".*"}
+      filter = {$or:[{"email": condition}, {"name": condition}, {"surname": condition}]};
+    }
+
+    // Not include admins
+    filter["role"] = {$ne: "admin"};
+
+    let page = parseInt(req.query.page);
+    if (typeof req.query.page === "undefined" || req.query.page === null || req.query.page === "0") {
+      page = 1;
+    }
+
+    usersRepository.getUsersPg(filter, options, page).then(result => {
+      const limit = app.get("pageLimit");
+      let lastPage = result.total / limit;
+      if (result.total % limit > 0) { // Sobran decimales
+        lastPage = lastPage + 1;
+      }
+      let pages = []; // paginas mostrar
+      for (let i = page - 2; i <= page + 2; i++) {
+        if (i > 0 && i <= lastPage) {
+          pages.push(i);
+        }
+      }
+      let response = {
+        users: result.users,
+        pages: pages,
+        currentPage: page
+      }
+
+      res.render('user/users.twig', response);
+    }).catch(error => {
+      res.send("Se ha producido un error al listar los usuarios: " + error)
+    })
+
+  });
+  
   app.get('/users/signup', function (req, res) {
     console.log("Access to signup form")
     res.render("signup.twig");
@@ -31,6 +76,7 @@ module.exports = function (app, usersRepository) {
           "?message=Username must be between 5 and 24 characters. It cannot be empty"+
           "&messageType=alert-danger");
       return;
+
     }
 
     //Email
@@ -174,5 +220,48 @@ module.exports = function (app, usersRepository) {
     res.redirect("/users/login" +
         "?message=User successfully logged out"+
         "&messageType=alert-success");
+  });
+
+
+
+  /*
+  app.get('/users/user/:id', function (req, res) {
+    let filter = {_id: ObjectId(req.params.id)};
+    usersRepository.findUser(filter, {}).then(user => {
+      if (user == null){
+        res.redirect("/users");
+      } else {
+        console.log("user found! "+ user);
+        res.render("user/single-user.twig", {user: user, isFriend: false});
+      }
+    }).catch(error => {
+      res.redirect("/users");
+    })
+  });*/
+
+  app.get('/users/user/:id', function (req, res) {
+
+    let filter = {_id: ObjectId(req.params.id)};
+    usersRepository.findUser(filter, {}).then(user => {
+      if (user == null){
+        res.redirect("/users");
+      } else {
+
+        let friendFilter = { // Requests sent to or received by our user
+          status: "ACCEPTED",
+          $or:[
+            {sender: req.session.user, receiver: user.email},
+            {sender: user.email, receiver: req.session.user}
+          ]
+        };
+        friendsRepository.findRequest(friendFilter, {}).then(friendRequest => {
+          res.render("user/single-user.twig", {user: user, isFriend: friendRequest != null});
+        }).catch(error => {
+          res.render("user/single-user.twig", {user: user, isFriend: false});
+        });
+      }
+    }).catch(error => {
+      res.redirect("/users");
+    })
   });
 }

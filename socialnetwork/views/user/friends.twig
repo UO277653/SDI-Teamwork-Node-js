@@ -1,0 +1,38 @@
+{% extends "layout.twig" %}
+{% block title %} Amigos – Social Network {% endblock %}
+{% block main_container %}
+    <h2>Amigos</h2>
+    <div class="table-responsive">
+        <table class="table table-hover" id="tableFriends">
+            <thead>
+            <tr>
+                <th scope="col">Email</th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Apellidos</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for friend in friends %}
+                <tr>
+                    <td>{{ friend.email }}</td>
+                    <td>{{ friend.name }}</td>
+                    <td>{{ friend.surname }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <!-- Paginación mostrar la actual y 2 anteriores y dos siguientes -->
+    <div class="row text-center">
+        <ul class="pagination">
+            {% for page in pages %}
+                <li class="page-item" id="id-{{ page }}">
+                    <a class="page-link" href="/friends/?page={{ page }}">{{ page }}</a>
+                </li>
+            {% endfor %}
+            <script>
+                $("#pi-"+"{{ currentPage }}").addClass("active");
+            </script>
+        </ul>
+    </div>
+{% endblock %}

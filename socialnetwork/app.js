@@ -47,12 +47,20 @@ app.use("/admin/delete", adminUserRouter);
 //--------------------------Repositories----------------------------------------
 const usersRepository = require("./repositories/usersRepository.js");
 usersRepository.init(app, MongoClient);
-require("./routes/users.js")(app, usersRepository);
+const friendsRepository = require("./repositories/friendsRepository.js");
+friendsRepository.init(app, MongoClient);
+
+require("./routes/users.js")(app, usersRepository, friendsRepository);
 require("./routes/admin.js")(app, usersRepository);
+require("./routes/friends.js")(app, usersRepository, friendsRepository);
 
 const publicationsRepository = require("./repositories/publicationsRepository.js");
 publicationsRepository.init(app, MongoClient);
-require("./routes/publications.js")(app, publicationsRepository);
+require("./routes/publications.js")(app, publicationsRepository, friendsRepository);
+
+const messagesRepository = require("./repositories/messajesRepository.js");
+messagesRepository.init(app,MongoClient);
+require("./routes/api/socialNetworkApi")(app, messagesRepository, usersRepository, friendsRepository);
 //--------------------------Repositories----------------------------------------
 
 // view engine setup

@@ -14,7 +14,7 @@ import java.util.List;
 
 //Ordenamos las pruebas por la anotación @Order de cada método
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class NotaneitorApplicationTests {
+class SocialNetworkApplicationTests {
     static String PathFirefox = "C:\\Program Files\\Mozilla Firefox\\firefox.exe";
 
     // Jonas
@@ -86,10 +86,6 @@ class NotaneitorApplicationTests {
     @Test
     @Order(11)
     void PR11() {
-
-        // Login as admin
-        driver.findElement(By.id("login")).click();
-        PO_LoginView.fillLoginForm(driver, "admin@email.com", "admin");
 
         driver.navigate().to("localhost:3000/admin/list");
         int elementos = 0;
@@ -228,6 +224,182 @@ class NotaneitorApplicationTests {
         }
 
         return size;
+    }
+
+
+    @Test
+    @Order(24)
+    void PR24(){
+        driver.navigate().to("localhost:3000/users/login");
+
+        WebElement usernameField = driver.findElement(By.id("email"));
+        usernameField.click();
+        usernameField.clear();
+        usernameField.sendKeys("prueba1@prueba1.com");
+
+        WebElement passwordField = driver.findElement(By.id("password"));
+        passwordField.click();
+        passwordField.clear();
+        passwordField.sendKeys("prueba1");
+
+        WebElement login = driver.findElement(By.id("login"));
+        login.click();
+
+        driver.navigate().to("localhost:3000/publications/add");
+        WebElement title = driver.findElement(By.id("title"));
+        title.click();
+        title.clear();
+        title.sendKeys("test");
+
+        WebElement content = driver.findElement(By.id("content"));
+        content.click();
+        content.clear();
+        content.sendKeys("test");
+
+        WebElement addButton = driver.findElement(By.id("add"));
+        addButton.click();
+
+        Assertions.assertTrue(driver.getPageSource().contains("La publicación ha sido añadida"));
+
+    }
+
+    @Test
+    @Order(25)
+    void PR25(){
+        driver.navigate().to("localhost:3000/users/login");
+
+        WebElement usernameField = driver.findElement(By.id("email"));
+        usernameField.click();
+        usernameField.clear();
+        usernameField.sendKeys("prueba1@prueba1.com");
+
+        WebElement passwordField = driver.findElement(By.id("password"));
+        passwordField.click();
+        passwordField.clear();
+        passwordField.sendKeys("prueba1");
+
+        WebElement login = driver.findElement(By.id("login"));
+        login.click();
+
+        driver.navigate().to("localhost:3000/publications/add");
+        WebElement title = driver.findElement(By.id("title"));
+        title.click();
+        title.clear();
+        title.sendKeys(" ");
+
+        WebElement content = driver.findElement(By.id("content"));
+        content.click();
+        content.clear();
+        content.sendKeys("test");
+
+        WebElement addButton = driver.findElement(By.id("add"));
+        addButton.click();
+
+        Assertions.assertTrue(driver.getPageSource().contains("Title must not be empty"));
+
+    }
+
+    @Test
+    @Order(25)
+    void PR25_2(){
+        driver.navigate().to("localhost:3000/users/login");
+
+        WebElement usernameField = driver.findElement(By.id("email"));
+        usernameField.click();
+        usernameField.clear();
+        usernameField.sendKeys("prueba1@prueba1.com");
+
+        WebElement passwordField = driver.findElement(By.id("password"));
+        passwordField.click();
+        passwordField.clear();
+        passwordField.sendKeys("prueba1");
+
+        WebElement login = driver.findElement(By.id("login"));
+        login.click();
+
+        driver.navigate().to("localhost:3000/publications/add");
+        WebElement title = driver.findElement(By.id("title"));
+        title.click();
+        title.clear();
+        title.sendKeys("test");
+
+        WebElement content = driver.findElement(By.id("content"));
+        content.click();
+        content.clear();
+        content.sendKeys(" ");
+
+        WebElement addButton = driver.findElement(By.id("add"));
+        addButton.click();
+
+        Assertions.assertTrue(driver.getPageSource().contains("Content must not be empty"));
+
+    }
+
+    @Test
+    @Order(26)
+    void PR26(){
+        driver.navigate().to("localhost:3000/users/login");
+
+        WebElement usernameField = driver.findElement(By.id("email"));
+        usernameField.click();
+        usernameField.clear();
+        usernameField.sendKeys("onepublicationuser@gmail.com");
+
+        WebElement passwordField = driver.findElement(By.id("password"));
+        passwordField.click();
+        passwordField.clear();
+        passwordField.sendKeys("password");
+
+        WebElement login = driver.findElement(By.id("login"));
+        login.click();
+
+        driver.navigate().to("localhost:3000/publications/listown");
+
+        Assertions.assertTrue(driver.getPageSource().contains("test"));
+
+    }
+
+    @Test
+    @Order(27)
+    void PR27(){
+        driver.navigate().to("localhost:3000/users/login");
+
+        WebElement usernameField = driver.findElement(By.id("email"));
+        usernameField.click();
+        usernameField.clear();
+        usernameField.sendKeys("usuarioAmigo1@gmail.com");
+
+        WebElement passwordField = driver.findElement(By.id("password"));
+        passwordField.click();
+        passwordField.clear();
+        passwordField.sendKeys("password");
+
+        driver.navigate().to("localhost:3000/publications/list/usuarioAmigo2@gmail.com");
+
+        Assertions.assertTrue(driver.getPageSource().contains("test"));
+
+    }
+
+
+    @Test
+    @Order(28)
+    void PR28(){
+        driver.navigate().to("localhost:3000/users/login");
+
+        WebElement usernameField = driver.findElement(By.id("email"));
+        usernameField.click();
+        usernameField.clear();
+        usernameField.sendKeys("usuarioAmigo1@gmail.com");
+
+        WebElement passwordField = driver.findElement(By.id("password"));
+        passwordField.click();
+        passwordField.clear();
+        passwordField.sendKeys("password");
+
+        driver.navigate().to("localhost:3000/publications/list/prueba1@prueba1.com");
+
+        Assertions.assertTrue(driver.getPageSource().contains("No tienes permiso para ver las publicaciones de este usuario"));
+
     }
 
 }
