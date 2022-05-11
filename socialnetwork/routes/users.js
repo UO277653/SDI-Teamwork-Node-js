@@ -50,7 +50,6 @@ module.exports = function (app, usersRepository, friendsRepository) {
   });
 
   app.post('/users/signup', function (req, res) {
-    console.log("POST");
     let securePassword = app.get("crypto").createHmac('sha256', app.get('clave'))
         .update(req.body.password).digest('hex');
 
@@ -109,9 +108,6 @@ module.exports = function (app, usersRepository, friendsRepository) {
       return;
     }
 
-    // validateSignup(user, req.body.passwordConfirm, res);
-
-
     usersRepository.getUsers({email: req.body.email}, {}).then( users => {
       if (users != null && users.length != 0){
         res.redirect("/users/signup" +
@@ -119,11 +115,13 @@ module.exports = function (app, usersRepository, friendsRepository) {
             "&messageType=alert-danger");
       } else {
         usersRepository.insertUser(user).then(userId => {
-          res.redirect("/users/login" + "?message=New user successfully registered" +
+          req.session.user = user.email;
+          //todo Redirigir a las opciones de usuario
+          res.redirect("/users/users" + "?message=New user successfully registered" +
               "&messageType=alert-success");
         }).catch(error => {
           res.redirect("/users/signup" +
-              "?message=An error has occurred"+
+              "?message=An error has occurred adding the user"+
               "&messageType=alert-danger");
         });
       }
@@ -134,7 +132,6 @@ module.exports = function (app, usersRepository, friendsRepository) {
     });
 
   });
-
 
   function validateSignup(user,passwordConfirm, res){
     //Name
@@ -215,6 +212,7 @@ module.exports = function (app, usersRepository, friendsRepository) {
           "&messageType=alert-danger ");
     })
   });
+
   app.get('/users/logout', function (req, res) {
     req.session.user = null;
     res.redirect("/users/login" +

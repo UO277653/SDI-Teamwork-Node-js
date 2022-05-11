@@ -8,6 +8,14 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 let app = express();
 
+let expressSession = require('express-session');
+
+app.use(expressSession({
+  secret: 'abcdefg',
+  resave: true,
+  saveUninitialized : true
+}))
+
 let bodyParser = require('body-parser');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
