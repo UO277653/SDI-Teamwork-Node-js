@@ -41,13 +41,6 @@ app.use(function(req, res, next) {
   next();
 });
 
-let expressSession = require('express-session');
-app.use(expressSession({
-  secret: 'abcdefg',
-  resave: true,
-  saveUninitialized: true
-}));
-
 const adminUserRouter = require("./routes/adminUserRouter");
 app.use("/admin/list", adminUserRouter);
 app.use("/admin/delete", adminUserRouter);

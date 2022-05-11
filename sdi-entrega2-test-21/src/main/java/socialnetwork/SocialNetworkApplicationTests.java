@@ -21,11 +21,11 @@ class SocialNetworkApplicationTests {
     // static String Geckodriver = "C:\\Users\\Alejandro\\Desktop\\SDI-2022\\software\\software\\geckodriver-v0.27.0-win64\\geckodriver.exe";
 
     // Adrian
-    static String Geckodriver = "C:\\Users\\adria\\OneDrive\\Escritorio\\UNIVERSIDAD\\AÑO 3\\SEMESTRE 2\\Sistemas Distribuidos e Internet\\Laboratorio\\Lab5\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
+//    static String Geckodriver = "C:\\Users\\adria\\OneDrive\\Escritorio\\UNIVERSIDAD\\AÑO 3\\SEMESTRE 2\\Sistemas Distribuidos e Internet\\Laboratorio\\Lab5\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
 
 
     //Sara
-    //static String Geckodriver = "D:\\UNI\\3º\\2º cuatri\\SDI\\Lab\\sesion05\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
+    static String Geckodriver = "D:\\UNI\\3º\\2º cuatri\\SDI\\Lab\\sesion05\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
 
     //Diego
     //static String Geckodriver = "C:\\Users\\dimar\\Desktop\\sdi\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
@@ -57,7 +57,7 @@ class SocialNetworkApplicationTests {
     @AfterAll
     static public void end() {
         //Cerramos el navegador al finalizar las pruebas
-        //driver.quit();
+        driver.quit();
     }
 
     //Antes de cada prueba se navega al URL home de la aplicación
@@ -69,7 +69,7 @@ class SocialNetworkApplicationTests {
     //Después de cada prueba se borran las cookies del navegador
     @AfterEach
     public void tearDown() {
-        //driver.manage().deleteAllCookies();
+        driver.manage().deleteAllCookies();
         //driver.close();
     }
 
@@ -78,6 +78,58 @@ class SocialNetworkApplicationTests {
      * of the assignment.
      */
 
+
+    /**
+     * 1. Registro de usuario con datos válidos
+     */
+    @Test
+    @Order(1)
+    void PR1(){
+        PO_SignUpView.signup(driver, "sarap@uniovi.es", "Paco", "Perez", "123456", "123456");
+        String text = "New user successfully registered";
+        String str = driver.findElement(By.className("alert")).getText();
+        Assertions.assertEquals(text, str);
+    }
+
+    /**
+     * 1. Registro de usuario con datos inválidos:
+     * 		Campos vacíos (email, nombre, apellidos)
+     */
+    @Test
+    @Order(2)
+    void PR2() { //TODO
+        PO_SignUpView.signup(driver, "", "", "", "123456", "123456");
+
+        List<WebElement> result = PO_View.checkElementBy(driver, "text", "Sign Up");
+        Assertions.assertEquals("Sign Up" , result.get(0).getText());
+    }
+
+    /**
+     * 1. Registro de usuario con datos inválidos
+     * 		repetición de contraseña inválida
+     */
+    @Test
+    @Order(3)
+    void PR3() {
+        PO_SignUpView.signup(driver, "sara@uniovi.com", "Paco", "Perez", "123456", "122222");
+        String text = "Passwords do not match";
+        String str = driver.findElement(By.className("alert")).getText();
+        Assertions.assertEquals(text, str);
+    }
+
+    /**
+     * 1. Registro de usuario con datos inválidos
+     * 		email existente
+     */
+    @Test
+    @Order(4)
+    void PR4() {
+        PO_SignUpView.signup(driver, "sarap@uniovi.es", "Paco", "Perez", "123456", "123456");
+
+        String text = "Email is already in use";
+        String str = driver.findElement(By.className("alert")).getText();
+        Assertions.assertEquals(text, str);
+    }
 
     /**
      * 4. Listado de usuarios del sistema: admin
