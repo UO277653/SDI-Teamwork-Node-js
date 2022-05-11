@@ -58,6 +58,18 @@ module.exports = {
             throw(error);
         }
     },
+    deleteFriendsOfUser: async function (filter, options) {
+        try {
+            const client = await this.mongoClient.connect(this.app.get('connectionStrings'));
+            const database = client.db("socialNetwork");
+            const collectionName = 'friendRequests';
+            const friendsCollection = database.collection(collectionName);
+            const result = await friendsCollection.deleteMany(filter, options);
+            return result;
+        } catch (error) {
+            throw (error);
+        }
+    },
 
     /*getFriendsPg: async function(filter, options, page) {
         try {
