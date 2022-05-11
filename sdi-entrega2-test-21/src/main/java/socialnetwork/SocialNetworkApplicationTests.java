@@ -87,6 +87,10 @@ class SocialNetworkApplicationTests {
     @Order(11)
     void PR11() {
 
+        // Login as admin
+        driver.findElement(By.id("login")).click();
+        PO_LoginView.fillLoginForm(driver, "admin@email.com", "admin");
+
         driver.navigate().to("localhost:3000/admin/list");
         int elementos = 0;
         for(int i = 0; i<1; i++){
