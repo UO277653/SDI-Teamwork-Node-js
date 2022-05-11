@@ -15,13 +15,20 @@ public class PO_UserListView {
 
     }
 
+    static public int countUsersOnPage(WebDriver driver, int page){
+
+        driver.navigate().to("localhost:3000/users/?page=" + page);
+        return driver.findElements(By.cssSelector("#tableUsers tbody tr")).size();
+
+    }
+
     public static void delete(WebDriver driver) {
         List<WebElement> removeButton = driver.findElements(By.id("deleteBtn"));
         removeButton.get(0).click();
     }
 
     public static void search(WebDriver driver, String searchText) {
-        WebElement searchBar = driver.findElement(By.name("searchText"));
+        WebElement searchBar = driver.findElement(By.name("search"));
         searchBar.click();
         searchBar.clear();
         searchBar.sendKeys(searchText);
