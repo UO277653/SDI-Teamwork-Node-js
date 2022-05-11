@@ -20,11 +20,10 @@ class SocialNetworkApplicationTests {
     static String PathFirefox = "C:\\Program Files\\Mozilla Firefox\\firefox.exe";
 
     // Jonas
-    // static String Geckodriver = "C:\\Users\\Alejandro\\Desktop\\SDI-2022\\software\\software\\geckodriver-v0.27.0-win64\\geckodriver.exe";
+    static String Geckodriver = "C:\\Users\\Alejandro\\Desktop\\SDI-2022\\software\\software\\geckodriver-v0.27.0-win64\\geckodriver.exe";
 
     // Adrian
-    // static String Geckodriver = "C:\\Users\\adria\\OneDrive\\Escritorio\\UNIVERSIDAD\\AÑO 3\\SEMESTRE 2\\Sistemas Distribuidos e Internet\\Laboratorio\\Lab5\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
-
+    //static String Geckodriver = "C:\\Users\\adria\\OneDrive\\Escritorio\\UNIVERSIDAD\\AÑO 3\\SEMESTRE 2\\Sistemas Distribuidos e Internet\\Laboratorio\\Lab5\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
 
     //Sara
     //static String Geckodriver = "D:\\UNI\\3º\\2º cuatri\\SDI\\Lab\\sesion05\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
@@ -364,6 +363,74 @@ class SocialNetworkApplicationTests {
         Assertions.assertTrue(newSize == oldSize-3);
     }
 
+    /**
+     * 6. Usuario: listado de usuarios
+     * Mostrar el listado de usuarios y comprobar que se muestran todos los que existen en el sistema, excepto
+     * el propio usuario y aquellos que sean Administradores
+     */
+    @Test
+    @Order(15)
+    void PR15() {
+        PO_LoginView.login(driver, "user01@email.com", "user01");
+        PO_PrivateView.goToUsersList(driver);
+
+        final int numOfAdmins = 1;
+
+        int elementos = 0;
+        elementos += PO_UserListView.countUsersOnPage(driver, 1);
+        elementos += PO_UserListView.countUsersOnPage(driver, 2);
+        elementos += PO_UserListView.countUsersOnPage(driver, 3);
+        elementos += PO_UserListView.countUsersOnPage(driver, 4);
+
+        // all users but the deleted ones and the admin and logged in users
+        Assertions.assertEquals(getNumberOfUsers() - (1 + numOfAdmins), elementos);
+    }
+
+    /**
+     * 7. Buscar usuarios
+     * Búsqueda campo vacío
+     */
+    @Test
+    @Order(16)
+    void PR16() {
+        PO_LoginView.login(driver, "user01@email.com", "user01");
+        PO_PrivateView.goToUsersList(driver);
+
+        PO_UserListView.search(driver,"");
+        List<WebElement> users = driver.findElements(By.cssSelector("#tableUsers tbody tr"));
+        Assertions.assertEquals(5, users.size());
+    }
+
+    /**
+     * 7. Buscar usuarios
+     * Búsqueda texto que no existe
+     */
+    @Test
+    @Order(17)
+    void PR17() {
+        PO_LoginView.login(driver, "user01@email.com", "user01");
+        PO_PrivateView.goToUsersList(driver);
+
+        PO_UserListView.search(driver,"ZXCVBNM");
+        List<WebElement> users = driver.findElements(By.cssSelector("#tableUsers tbody tr"));
+        Assertions.assertEquals(0, users.size());
+    }
+
+    /**
+     * 7. Buscar usuarios
+     * Búsqueda texto correcto
+     */
+    @Test
+    @Order(18)
+    void PR18() {
+        PO_LoginView.login(driver, "user01@email.com", "user01");
+        PO_PrivateView.goToUsersList(driver);
+
+        PO_UserListView.search(driver,"user02");
+        List<WebElement> users = driver.findElements(By.cssSelector("#tableUsers tbody tr"));
+        Assertions.assertEquals(1, users.size());
+    }
+
     private void addUser(String email, String name, String surname, String role){
         mongoClient = MongoClients.create(URI);
         db = mongoClient.getDatabase("socialNetwork");
@@ -402,6 +469,20 @@ class SocialNetworkApplicationTests {
         }
 
         return size;
+    }
+
+    /**
+     * 11. Listado de amigos
+     * Mostrar el listado de amigos de un usuario
+     */
+    @Test
+    @Order(23)
+    void PR23() {
+        PO_LoginView.login(driver, "user01@email.com", "user01");
+        driver.findElement(By.id("friendList")).click();
+
+        List<WebElement> friends = driver.findElements(By.cssSelector("#tableFriends tbody tr"));
+        Assertions.assertEquals(2, friends.size());
     }
 
 
