@@ -34,8 +34,7 @@ module.exports = function (app, usersRepository, friendsRepository) {
       let response = {
         users: result.users,
         pages: pages,
-        currentPage: page,
-        session: req.session.user
+        currentPage: page
       }
 
       res.render('user/users.twig', response);
@@ -47,7 +46,7 @@ module.exports = function (app, usersRepository, friendsRepository) {
   
   app.get('/users/signup', function (req, res) {
     console.log("Access to signup form")
-    res.render("signup.twig", {session: null});
+    res.render("signup.twig");
   });
 
   app.post('/users/signup', function (req, res) {
@@ -146,7 +145,7 @@ module.exports = function (app, usersRepository, friendsRepository) {
   }
 
   app.get('/users/login', function (req, res) {
-    res.render("login.twig", {session: null});
+    res.render("login.twig");
   })
 
   app.post('/users/login', function (req, res) {
@@ -165,18 +164,7 @@ module.exports = function (app, usersRepository, friendsRepository) {
             "&messageType=alert-danger ");
       } else {
         req.session.user = user.email;
-
-        if (user.role === 'admin'){
-          //lista todos los usuarios de la aplicacion
-          res.redirect("/admin/list" +
-              "?message=Admin successfully logged in"+
-              "&messageType=alert-success");
-        } else {
-          //listado de usuarios de la red social
-          res.redirect("/users" +
-              "?message=User successfully logged in"+
-              "&messageType=alert-success");
-        }
+        res.redirect("/users"); //TODO redirect to users (ojo admin)
       }
     }).catch(error => {
       req.session.user = null;
