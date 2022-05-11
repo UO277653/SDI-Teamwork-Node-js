@@ -8,6 +8,8 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 let app = express();
 
+let jwt=require('jsonwebtoken');
+app.set('jwt', jwt);
 let expressSession = require('express-session');
 
 app.use(expressSession({
@@ -41,11 +43,6 @@ app.use(function(req, res, next) {
   next();
 });
 
-app.use(expressSession({
-  secret: 'abcdefg',
-  resave: true,
-  saveUninitialized: true
-}));
 
 const adminUserRouter = require("./routes/adminUserRouter");
 app.use("/admin/list", adminUserRouter);
