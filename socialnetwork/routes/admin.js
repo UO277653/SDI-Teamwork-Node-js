@@ -11,7 +11,7 @@ module.exports = function (app, usersRepository) {
     app.get('/admin/list', function (req, res) {
 
         usersRepository.getUsersAdmin({}, {}).then(users => {
-            res.render('admin/single-user.twig', {users: users});
+            res.render('admin/users.twig', {users: users});
         }).catch(error => {
             res.send("Se ha producido un error al listar los usuarios: " + error)
         })
@@ -23,16 +23,39 @@ module.exports = function (app, usersRepository) {
             if (req.body.hasOwnProperty(key)) {
                 item = req.body[key];
 
-                let filter = {_id: ObjectId(item)};
-                usersRepository.deleteUser(filter, {}).then(result => {
-                    if (result == null || result.deletedCount == 0) {
-                        res.send("No se ha podido eliminar el usuario");
-                    } else {
-                        res.redirect("/admin/list");
+                if (item[0].length == 1) {
+                    let filter = {_id: ObjectId(item)};
+                    usersRepository.deleteUser(filter, {}).then(result => {
+                        if (result == null || result.deletedCount == 0) {
+                            res.send("No se ha podido eliminar el usuario");
+                        } else {
+                            res.redirect("/admin/list");
+                        }
+                    }).catch(error => {
+                        res.send("Se ha producido un error al intentar eliminar el usuario: " + error)
+                    });
+
+                } else {
+
+                    let deletedIds = [];
+
+                    for (let i = 0; i < item.length; i++) {
+                            deletedIds.push(ObjectId(item[i]))
                     }
-                }).catch(error => {
-                    res.send("Se ha producido un error al intentar eliminar el usuario: " + error)
-                });
+
+                    let filter = {_id: {$in: deletedIds}};
+
+                    usersRepository.deleteUsers(filter, {}).then(result => {
+                        if (result == null || result.deletedCount == 0) {
+                            res.send("No se ha podido eliminar el usuario");
+                        } else {
+                            res.redirect("/admin/list");
+                        }
+                    }).catch(error => {
+                        res.send("Se ha producido un error al intentar eliminar el usuario: " + error)
+                    });
+
+                }
             }
         }
     });
