@@ -43,7 +43,6 @@ app.use(function(req, res, next) {
   next();
 });
 
-
 const adminUserRouter = require("./routes/adminUserRouter");
 app.use("/admin/list", adminUserRouter);
 app.use("/admin/delete", adminUserRouter);
