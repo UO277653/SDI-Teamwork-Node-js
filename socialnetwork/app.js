@@ -41,7 +41,6 @@ app.use(function(req, res, next) {
   next();
 });
 
-let expressSession = require('express-session');
 app.use(expressSession({
   secret: 'abcdefg',
   resave: true,
