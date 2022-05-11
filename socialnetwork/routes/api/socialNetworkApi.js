@@ -2,7 +2,7 @@ const {ObjectId} = require("mongodb");
 
 module.exports = function (app, messagesRepository, usersRepository, friendsRepository) {
 
-    app.post("/api/messages/add", function(req, res){
+    app.post("/api/v1.0/messages/add", function(req, res){
         try {
             let message = {
                 sender: req.body.sender, //Aquí iría el correo del que crea el mensaje
@@ -40,7 +40,7 @@ module.exports = function (app, messagesRepository, usersRepository, friendsRepo
         }
     });
 
-    app.post("/api/messages/conversation", function(req, res){
+    app.post("/api/v1.0/messages/conversation", function(req, res){
         try {
             //let userName1 = req.body.userName1;
             //let userName2 = req.body.userName2;
@@ -74,7 +74,7 @@ module.exports = function (app, messagesRepository, usersRepository, friendsRepo
         }
     });
 
-    app.put("/api/messages/setAsRead/:id", function(req, res){
+    app.put("/api/v1.0/messages/setAsRead/:id", function(req, res){
         try {
             //let userName1;
             //let id = req.params.id;
@@ -116,12 +116,12 @@ module.exports = function (app, messagesRepository, usersRepository, friendsRepo
         }
     });
 
-    app.get("/api/friends/list", function(req, res) {
+    app.get("/api/v1.0/friends/list", function(req, res) {
         let options = {projection: {_id: 0, password: 0}}
         let filter = {
             $or:[
-                {sender: req.session.user},
-                {receiver: req.session.user}
+                {sender: req.query.user},
+                {receiver: req.query.user}
             ],
             status: "ACCEPTED"
         };
