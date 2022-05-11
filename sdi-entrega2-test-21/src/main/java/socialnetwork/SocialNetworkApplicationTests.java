@@ -10,6 +10,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import socialnetwork.util.SeleniumUtils;
+
 import java.util.List;
 
 //Ordenamos las pruebas por la anotación @Order de cada método
