@@ -49,7 +49,7 @@
                     $.ajax({
                         url: URLbase + "/messages/setAsRead/" + messages[j]._id,
                         type: "PUT",
-                        data: {user:user},
+                        data: {user:Cookies.get("receiver")},
                         dataType: 'json',
                         headers: {"token": token, "user": user},
                         success: function (response) {
