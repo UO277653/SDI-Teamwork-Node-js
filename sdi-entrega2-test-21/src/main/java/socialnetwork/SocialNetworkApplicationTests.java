@@ -88,6 +88,37 @@ class SocialNetworkApplicationTests {
      * of the assignment.
      */
 
+//    @Test
+//    void generarUsuariosPublicaciones(){
+//
+////        for (int i = 8; i<=15; i++){
+////            String number = String.format("%02d", i);
+//            String name = "user15";
+//            String email = name + "@email.com";
+//            String surname = "Sdi 2022";
+//            String password = name;
+//            PO_LoginView.login(driver, email, password);
+//            PO_View.checkElementBy(driver, "class", "alert alert-success");
+//
+//            for (int j = 1; j<=10; j++){
+//                driver.navigate().to("localhost:3000/publications/add");
+//                WebElement title = driver.findElement(By.id("title"));
+//                title.click();
+//                title.clear();
+//                title.sendKeys("Publicacion " + j);
+//
+//                WebElement content = driver.findElement(By.id("content"));
+//                content.click();
+//                content.clear();
+//                content.sendKeys("my publi");
+//
+//                WebElement addButton = driver.findElement(By.id("add"));
+//                addButton.click();
+//            }
+//            //logout
+//            driver.navigate().to("localhost:3000/users/logout");
+////        }
+//    }
 
     /**
      * W1. Registro de usuario con datos válidos
@@ -171,7 +202,7 @@ class SocialNetworkApplicationTests {
 
     /**
      * W2. Inicio de sesión con datos válidos
-     * 		como administrador
+     * 		como usuario estandar
      */
     @Test
     @Order(6)
@@ -246,7 +277,7 @@ class SocialNetworkApplicationTests {
     }
 
     /**
-     * 4. Listado de usuarios del sistema: admin
+     * W4. Listado de usuarios del sistema: admin
      * Mostrar el listado de usuarios y comprobar que se muestran todos los que existen en el sistema
      */
     @Test
@@ -265,6 +296,165 @@ class SocialNetworkApplicationTests {
         // TERMINAR CON ASSERT
         Assertions.assertEquals(getNumberOfUsers(), elementos);
     }
+
+    /**
+     * W5. Admin: borrado múltiple de usuarios
+     * Borrar primer usuario
+     */
+    @Test
+    @Order(12)
+    void PR12() {
+
+        // Login as admin
+        driver.findElement(By.id("login-btn")).click();
+        PO_LoginView.fillLoginForm(driver, "admin@email.com", "admin");
+
+        // Add test user to the bottom
+        addUser("testDeleteFirst@email.com", "testDeleteFirst", "test", "standard");
+
+        // Navigate to the admin page
+        driver.navigate().to("localhost:3000/admin/list");
+
+        // The first test user of the list
+        List<WebElement> elementToRemove = driver.findElements(By.id("testDeleteFirst"));
+        Assertions.assertTrue(!elementToRemove.isEmpty());
+        elementToRemove.get(elementToRemove.size()-1).click();
+        PO_UserListView.delete(driver);
+        List<WebElement> elementToRemoveNew = driver.findElements(By.id("testDeleteFirst"));
+
+        // TERMINAR CON ASSERT
+        Assertions.assertTrue(elementToRemoveNew.isEmpty()); // The element has been deleted
+    }
+
+    /**
+     * W5. Admin: borrado múltiple de usuarios
+     * Borrar último usuario
+     */
+    @Test
+    @Order(13)
+    void PR13() {
+        // Login as admin
+        driver.findElement(By.id("login-btn")).click();
+        PO_LoginView.fillLoginForm(driver, "admin@email.com", "admin");
+
+        // Add test user to the bottom
+        addUser("testDelete1@email.com", "testDelete1", "test", "standard");
+
+        // Navigate to the admin page
+        driver.navigate().to("localhost:3000/admin/list");
+        List<WebElement> elementToRemove = driver.findElements(By.cssSelector("#tableUsers tbody tr td input"));
+        int oldSize = elementToRemove.size();
+        Assertions.assertTrue(!elementToRemove.isEmpty());
+        elementToRemove.get(elementToRemove.size()-1).click();
+        PO_UserListView.delete(driver);
+        List<WebElement> elementToRemoveNew = driver.findElements(By.cssSelector("#tableUsers tbody tr td input"));
+        int newSize = elementToRemoveNew.size();
+
+        // TERMINAR CON ASSERT
+        Assertions.assertTrue(newSize == (oldSize - 1));
+    }
+
+    /**
+     * W5. Admin: borrado múltiple de usuarios
+     * Borrar tres usuarios
+     */
+    @Test
+    @Order(14)
+    void PR14() {
+        // Login as admin
+        driver.findElement(By.id("login-btn")).click();
+        PO_LoginView.fillLoginForm(driver, "admin@email.com", "admin");
+
+        // Add test users to the bottom
+        addUser("testDelete1@email.com", "testDelete1", "test", "standard");
+        addUser("testDelete2@email.com", "testDelete2", "test", "standard");
+        addUser("testDelete3@email.com", "testDelete3", "test", "standard");
+
+        // Navigate to the admin page
+        driver.navigate().to("localhost:3000/admin/list");
+        List<WebElement> elementToRemove = driver.findElements(By.cssSelector("#tableUsers tbody tr td input"));
+        int oldSize = elementToRemove.size();
+        Assertions.assertTrue(!elementToRemove.isEmpty());
+        elementToRemove.get(elementToRemove.size()-1).click();
+        elementToRemove.get(elementToRemove.size()-2).click();
+        elementToRemove.get(elementToRemove.size()-3).click();
+        PO_UserListView.delete(driver);
+        List<WebElement> elementToRemoveNew = driver.findElements(By.cssSelector("#tableUsers tbody tr td input"));
+        int newSize = elementToRemoveNew.size();
+
+        // TERMINAR CON ASSERT
+        Assertions.assertTrue(newSize == oldSize-3);
+    }
+
+    /**
+     * W6. Usuario: listado de usuarios
+     * Mostrar el listado de usuarios y comprobar que se muestran todos los que existen en el sistema, excepto
+     * el propio usuario y aquellos que sean Administradores
+     */
+    @Test
+    @Order(15)
+    void PR15() {
+        PO_LoginView.login(driver, "user01@email.com", "user01");
+        PO_PrivateView.goToUsersList(driver);
+
+        final int numOfAdmins = 1;
+
+        int elementos = 0;
+        elementos += PO_UserListView.countUsersOnPage(driver, 1);
+        elementos += PO_UserListView.countUsersOnPage(driver, 2);
+        elementos += PO_UserListView.countUsersOnPage(driver, 3);
+        elementos += PO_UserListView.countUsersOnPage(driver, 4);
+
+        // all users but the deleted ones and the admin and logged in users
+        Assertions.assertEquals(getNumberOfUsers() - (1 + numOfAdmins), elementos);
+    }
+
+    /**
+     * W7. Buscar usuarios
+     * Búsqueda campo vacío
+     */
+    @Test
+    @Order(16)
+    void PR16() {
+        PO_LoginView.login(driver, "user01@email.com", "user01");
+        PO_PrivateView.goToUsersList(driver);
+
+        PO_UserListView.search(driver,"");
+        List<WebElement> users = driver.findElements(By.cssSelector("#tableUsers tbody tr"));
+        Assertions.assertEquals(5, users.size());
+    }
+
+    /**
+     * W7. Buscar usuarios
+     * Búsqueda texto que no existe
+     */
+    @Test
+    @Order(17)
+    void PR17() {
+        PO_LoginView.login(driver, "user01@email.com", "user01");
+        PO_PrivateView.goToUsersList(driver);
+
+        PO_UserListView.search(driver,"ZXCVBNM");
+        List<WebElement> users = driver.findElements(By.cssSelector("#tableUsers tbody tr"));
+        Assertions.assertEquals(0, users.size());
+    }
+
+    /**
+     * W7. Buscar usuarios
+     * Búsqueda texto correcto
+     */
+    @Test
+    @Order(18)
+    void PR18() {
+        PO_LoginView.login(driver, "user01@email.com", "user01");
+        PO_PrivateView.goToUsersList(driver);
+
+        PO_UserListView.search(driver,"user02");
+        List<WebElement> users = driver.findElements(By.cssSelector("#tableUsers tbody tr"));
+        Assertions.assertEquals(1, users.size());
+    }
+
+
 
     /**
      * W8. Enviar una invitación de amistad a un usuario
@@ -395,204 +585,6 @@ class SocialNetworkApplicationTests {
 
 
 
-
-    /**
-     * 5. Admin: borrado múltiple de usuarios
-     * Borrar primer usuario
-     */
-    @Test
-    @Order(12)
-    void PR12() {
-
-        // Login as admin
-        driver.findElement(By.id("login-btn")).click();
-        PO_LoginView.fillLoginForm(driver, "admin@email.com", "admin");
-
-        // Add test user to the bottom
-        addUser("testDeleteFirst@email.com", "testDeleteFirst", "test", "standard");
-
-        // Navigate to the admin page
-        driver.navigate().to("localhost:3000/admin/list");
-
-        // The first test user of the list
-        List<WebElement> elementToRemove = driver.findElements(By.id("testDeleteFirst"));
-        Assertions.assertTrue(!elementToRemove.isEmpty());
-        elementToRemove.get(elementToRemove.size()-1).click();
-        PO_UserListView.delete(driver);
-        List<WebElement> elementToRemoveNew = driver.findElements(By.id("testDeleteFirst"));
-
-        // TERMINAR CON ASSERT
-        Assertions.assertTrue(elementToRemoveNew.isEmpty()); // The element has been deleted
-    }
-
-    /**
-     * 5. Admin: borrado múltiple de usuarios
-     * Borrar último usuario
-     */
-    @Test
-    @Order(13)
-    void PR13() {
-        // Login as admin
-        driver.findElement(By.id("login-btn")).click();
-        PO_LoginView.fillLoginForm(driver, "admin@email.com", "admin");
-
-        // Add test user to the bottom
-        addUser("testDelete1@email.com", "testDelete1", "test", "standard");
-
-        // Navigate to the admin page
-        driver.navigate().to("localhost:3000/admin/list");
-        List<WebElement> elementToRemove = driver.findElements(By.cssSelector("#tableUsers tbody tr td input"));
-        int oldSize = elementToRemove.size();
-        Assertions.assertTrue(!elementToRemove.isEmpty());
-        elementToRemove.get(elementToRemove.size()-1).click();
-        PO_UserListView.delete(driver);
-        List<WebElement> elementToRemoveNew = driver.findElements(By.cssSelector("#tableUsers tbody tr td input"));
-        int newSize = elementToRemoveNew.size();
-
-        // TERMINAR CON ASSERT
-        Assertions.assertTrue(newSize == (oldSize - 1));
-    }
-
-    /**
-     * 5. Admin: borrado múltiple de usuarios
-     * Borrar tres usuarios
-     */
-    @Test
-    @Order(14)
-    void PR14() {
-        // Login as admin
-        driver.findElement(By.id("login-btn")).click();
-        PO_LoginView.fillLoginForm(driver, "admin@email.com", "admin");
-
-        // Add test users to the bottom
-        addUser("testDelete1@email.com", "testDelete1", "test", "standard");
-        addUser("testDelete2@email.com", "testDelete2", "test", "standard");
-        addUser("testDelete3@email.com", "testDelete3", "test", "standard");
-
-        // Navigate to the admin page
-        driver.navigate().to("localhost:3000/admin/list");
-        List<WebElement> elementToRemove = driver.findElements(By.cssSelector("#tableUsers tbody tr td input"));
-        int oldSize = elementToRemove.size();
-        Assertions.assertTrue(!elementToRemove.isEmpty());
-        elementToRemove.get(elementToRemove.size()-1).click();
-        elementToRemove.get(elementToRemove.size()-2).click();
-        elementToRemove.get(elementToRemove.size()-3).click();
-        PO_UserListView.delete(driver);
-        List<WebElement> elementToRemoveNew = driver.findElements(By.cssSelector("#tableUsers tbody tr td input"));
-        int newSize = elementToRemoveNew.size();
-
-        // TERMINAR CON ASSERT
-        Assertions.assertTrue(newSize == oldSize-3);
-    }
-
-    /**
-     * 6. Usuario: listado de usuarios
-     * Mostrar el listado de usuarios y comprobar que se muestran todos los que existen en el sistema, excepto
-     * el propio usuario y aquellos que sean Administradores
-     */
-    @Test
-    @Order(15)
-    void PR15() {
-        PO_LoginView.login(driver, "user01@email.com", "user01");
-        PO_PrivateView.goToUsersList(driver);
-
-        final int numOfAdmins = 1;
-
-        int elementos = 0;
-        elementos += PO_UserListView.countUsersOnPage(driver, 1);
-        elementos += PO_UserListView.countUsersOnPage(driver, 2);
-        elementos += PO_UserListView.countUsersOnPage(driver, 3);
-        elementos += PO_UserListView.countUsersOnPage(driver, 4);
-
-        // all users but the deleted ones and the admin and logged in users
-        Assertions.assertEquals(getNumberOfUsers() - (1 + numOfAdmins), elementos);
-    }
-
-    /**
-     * 7. Buscar usuarios
-     * Búsqueda campo vacío
-     */
-    @Test
-    @Order(16)
-    void PR16() {
-        PO_LoginView.login(driver, "user01@email.com", "user01");
-        PO_PrivateView.goToUsersList(driver);
-
-        PO_UserListView.search(driver,"");
-        List<WebElement> users = driver.findElements(By.cssSelector("#tableUsers tbody tr"));
-        Assertions.assertEquals(5, users.size());
-    }
-
-    /**
-     * 7. Buscar usuarios
-     * Búsqueda texto que no existe
-     */
-    @Test
-    @Order(17)
-    void PR17() {
-        PO_LoginView.login(driver, "user01@email.com", "user01");
-        PO_PrivateView.goToUsersList(driver);
-
-        PO_UserListView.search(driver,"ZXCVBNM");
-        List<WebElement> users = driver.findElements(By.cssSelector("#tableUsers tbody tr"));
-        Assertions.assertEquals(0, users.size());
-    }
-
-    /**
-     * 7. Buscar usuarios
-     * Búsqueda texto correcto
-     */
-    @Test
-    @Order(18)
-    void PR18() {
-        PO_LoginView.login(driver, "user01@email.com", "user01");
-        PO_PrivateView.goToUsersList(driver);
-
-        PO_UserListView.search(driver,"user02");
-        List<WebElement> users = driver.findElements(By.cssSelector("#tableUsers tbody tr"));
-        Assertions.assertEquals(1, users.size());
-    }
-
-    private void addUser(String email, String name, String surname, String role){
-        mongoClient = MongoClients.create(URI);
-        db = mongoClient.getDatabase("socialNetwork");
-        String collectionName = "users";
-        MongoCollection userCollection = db.getCollection(collectionName);
-        try {
-            userCollection.insertOne(new Document()
-                    .append("email", email)
-                    .append("name", name)
-                    .append("surname", surname)
-                    .append("password", "test")
-                    .append("role", role));
-        } catch (MongoException me) {
-            System.err.println("Unable to insert due to an error: " + me);
-        }
-    }
-
-    private int getNumberOfUsers(){
-
-        mongoClient = MongoClients.create(URI);
-        db = mongoClient.getDatabase("socialNetwork");
-        String collectionName = "users";
-        MongoCollection userCollection = db.getCollection(collectionName);
-        int size = 0;
-
-        try {
-            MongoCursor<Document> dbCursor = userCollection.find().iterator();
-
-            while (dbCursor.hasNext()) {
-                size++;
-                dbCursor.next();
-            }
-
-        } catch (MongoException me) {
-            System.err.println("Unable to insert due to an error: " + me);
-        }
-
-        return size;
-    }
-
     /**
      * W10. Aceptar una invitación recibida
      * Sobre el listado de invitaciones recibidas. Hacer clic en el botón/enlace de una de ellas y comprobar
@@ -638,7 +630,7 @@ class SocialNetworkApplicationTests {
     }
 
     /**
-     * 11. Listado de amigos
+     * W11. Listado de amigos
      * Mostrar el listado de amigos de un usuario
      */
     @Test
@@ -651,12 +643,15 @@ class SocialNetworkApplicationTests {
         Assertions.assertEquals(2, friends.size());
     }
 
-
+    /**
+     * [Prueba24] Ir al formulario crear publicaciones, rellenarla con datos válidos y pulsar el botón Submit.
+     * Comprobar que la publicación sale en el listado de publicaciones de dicho usuario
+     */
     @Test
     @Order(24)
     void PR24(){
 
-        PO_LoginView.login(driver, "prueba1@prueba1.com", "prueba1");
+        PO_LoginView.login(driver, "user06@email.com", "user06");
 
         driver.navigate().to("localhost:3000/publications/add");
         WebElement title = driver.findElement(By.id("title"));
@@ -676,11 +671,15 @@ class SocialNetworkApplicationTests {
 
     }
 
+    /**
+     * [Prueba25] Ir al formulario de crear publicaciones, rellenarla con datos inválidos (campo título vacío) y
+     * pulsar el botón Submit. Comprobar que se muestra el mensaje de campo obligatorio.
+     */
     @Test
     @Order(25)
     void PR25(){
 
-        PO_LoginView.login(driver, "prueba1@prueba1.com", "prueba1");
+        PO_LoginView.login(driver, "user06@email.com", "user06");
 
         driver.navigate().to("localhost:3000/publications/add");
         WebElement title = driver.findElement(By.id("title"));
@@ -703,7 +702,7 @@ class SocialNetworkApplicationTests {
     @Test
     @Order(25)
     void PR25_2(){
-        PO_LoginView.login(driver, "prueba1@prueba1.com", "prueba1");
+        PO_LoginView.login(driver, "user06@email.com", "user06");
 
         driver.navigate().to("localhost:3000/publications/add");
         WebElement title = driver.findElement(By.id("title"));
@@ -723,26 +722,39 @@ class SocialNetworkApplicationTests {
 
     }
 
+    /**
+     * [Prueba26] Mostrar el listado de publicaciones de un usuario y comprobar que se muestran todas las que
+     * existen para dicho usuario.
+     */
     @Test
     @Order(26)
     void PR26(){
-        PO_LoginView.login(driver, "onepublicationuser@gmail.com", "password");
+        PO_LoginView.login(driver, "user06@email.com", "user06");
 
         driver.navigate().to("localhost:3000/publications/listown");
 
-        Assertions.assertTrue(driver.getPageSource().contains("test"));
+        Assertions.assertTrue(driver.getPageSource().contains("Publications for user06@email.com"));
 
     }
 
+    /**
+     * [Prueba27] Mostrar el listado de publicaciones de un usuario amigo y comprobar que se muestran todas
+     * las que existen para dicho usuario.
+     */
     @Test
     @Order(27)
     void PR27(){
 
-        PO_LoginView.login(driver, "usuarioAmigo1@gmail.com", "password");
+        //Dos usuarios que son amigos
+        String friend1Email = "user06@email.com" ;
+        String friend1Password = "user06";
+        String friend2Email = "user05@email.com" ;
 
-        driver.navigate().to("localhost:3000/publications/list/usuarioAmigo2@gmail.com");
+        PO_LoginView.login(driver, friend1Email, "user06");
 
-        Assertions.assertTrue(driver.getPageSource().contains("test"));
+        driver.navigate().to("localhost:3000/publications/list/" + friend2Email);
+
+        Assertions.assertTrue(driver.getPageSource().contains("user05@email.com"));
 
     }
 
@@ -750,7 +762,7 @@ class SocialNetworkApplicationTests {
     @Test
     @Order(28)
     void PR28(){
-        PO_LoginView.login(driver, "usuarioAmigo1@gmail.com", "password");
+        PO_LoginView.login(driver, "user06@email.com", "user06");
 
         driver.navigate().to("localhost:3000/publications/list/prueba1@prueba1.com");
 
@@ -758,9 +770,10 @@ class SocialNetworkApplicationTests {
 
     }
 
-    /*
-        Intentar acceder sin estar autenticado a la opción de listado de usuarios. Se deberá volver al
-        formulario de login.
+    /**
+     * W15
+     * Intentar acceder sin estar autenticado a la opción de listado de usuarios. Se deberá volver al
+     * formulario de login.
      */
     @Test
     @Order(29)
@@ -773,9 +786,11 @@ class SocialNetworkApplicationTests {
         Assertions.assertEquals(driver.getCurrentUrl(), "http://localhost:3000/users/login");
     }
 
-    /*
-        Intentar acceder sin estar autenticado a la opción de listado de invitaciones de amistad recibida
-        de un usuario estándar. Se deberá volver al formulario de login.
+
+    /**
+     * W15
+     * Intentar acceder sin estar autenticado a la opción de listado de invitaciones de amistad recibida
+     * de un usuario estándar. Se deberá volver al formulario de login.
      */
     @Test
     @Order(30)
@@ -788,15 +803,16 @@ class SocialNetworkApplicationTests {
         Assertions.assertEquals(driver.getCurrentUrl(), "http://localhost:3000/users/login");
     }
 
-    /*
-        Intentar acceder estando autenticado como usuario standard a la lista de amigos de otro
-        usuario. Se deberá mostrar un mensaje de acción indebida.
+    /**
+     * W15
+     * Intentar acceder sin estar autenticado a la opción de listado de invitaciones de amistad recibida
+     * de un usuario estándar. Se deberá volver al formulario de login.
      */
     @Test
     @Order(31)
     void PR31() {
 
-        // A user cannot access the friends list of another, as the user in the session is used
+        // A user cannot access the friends list of another, as the user in the session is used (see documentation)
     }
 
     /**
@@ -871,5 +887,42 @@ class SocialNetworkApplicationTests {
 
         List<WebElement> friendsList = PO_View.checkElementBy(driver, "free", "Juan Apellido");
         Assertions.assertEquals(3, friendsList.size());
+    }
+
+    private int getNumberOfUsers(){
+
+        mongoClient = MongoClients.create(URI);
+        db = mongoClient.getDatabase("socialNetwork");
+        String collectionName = "users";
+        MongoCollection userCollection = db.getCollection(collectionName);
+        int size = 0;
+
+        try {
+            MongoCursor<Document> dbCursor = userCollection.find().iterator();
+
+            while (dbCursor.hasNext()) {
+                size++;
+                dbCursor.next();
+            }
+
+        } catch (MongoException me) {
+            System.err.println("Unable to insert due to an error: " + me);
+        }
+
+        return size;
+    }
+
+    private void addUser(String email, String name, String surname, String role){
+        MongoCollection userCollection = collection;
+        try {
+            userCollection.insertOne(new Document()
+                    .append("email", email)
+                    .append("name", name)
+                    .append("surname", surname)
+                    .append("password", "test")
+                    .append("role", role));
+        } catch (MongoException me) {
+            System.err.println("Unable to insert due to an error: " + me);
+        }
     }
 }

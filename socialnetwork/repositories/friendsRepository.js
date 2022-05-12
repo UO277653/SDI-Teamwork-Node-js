@@ -12,6 +12,7 @@ module.exports = {
             const collectionName = 'friendRequests';
             const requestsCollection = database.collection(collectionName);
             const friendReq = await requestsCollection.findOne(filter, options);
+            client.close();
             return friendReq;
         } catch (error) {
             throw (error);
@@ -25,6 +26,7 @@ module.exports = {
             const collectionName = 'friendRequests';
             const requestsCollection = database.collection(collectionName);
             const result = await requestsCollection.insertOne(friendRequest);
+            client.close();
             return result.insertedId;
         } catch (error) {
             throw (error);
@@ -40,6 +42,7 @@ module.exports = {
 
             let filter = {_id: friendRequest._id}
             const result = await requestsCollection.updateOne(filter, {$set: friendRequest}, {});
+            client.close();
             return result;
         } catch (error) {
             throw (error);
@@ -53,6 +56,7 @@ module.exports = {
             const collectionName = 'friendRequests';
             const requestsCollection = database.collection(collectionName);
             const friendRequests = await requestsCollection.find(filter, options).toArray();
+            client.close();
             return friendRequests;
         } catch(error) {
             throw(error);
@@ -65,6 +69,7 @@ module.exports = {
             const collectionName = 'friendRequests';
             const friendsCollection = database.collection(collectionName);
             const result = await friendsCollection.deleteMany(filter, options);
+            client.close();
             return result;
         } catch (error) {
             throw (error);

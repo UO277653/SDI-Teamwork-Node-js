@@ -259,9 +259,9 @@ module.exports = function (app, usersRepository, friendsRepository) {
           ]
         };
         friendsRepository.findRequest(friendFilter, {}).then(friendRequest => {
-          res.render("user/single-user.twig", {user: user, isFriend: friendRequest != null}); // TODO: Cambiar esto
+          res.render("user/single-user.twig", {user: user, isFriend: friendRequest != null, session:req.session.user});
         }).catch(error => {
-          res.render("user/single-user.twig", {user: user, isFriend: false}); // TODO: Cambiar esto
+          res.render("user/single-user.twig", {user: user, isFriend: false, session:req.session.user});
         });
       }
     }).catch(error => {

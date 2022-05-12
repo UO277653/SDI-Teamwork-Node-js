@@ -12,6 +12,7 @@ module.exports = {
             const collectionName = 'publications';
             const publicationsCollection = database.collection(collectionName);
             const publications = await publicationsCollection.find(filter, options).toArray();
+            client.close();
             return publications;
         } catch (error) {
             throw (error);
@@ -24,6 +25,7 @@ module.exports = {
             const collectionName = 'publications';
             const publicationsCollection = database.collection(collectionName);
             const result = await publicationsCollection.insertOne(publication);
+            client.close();
             return result.insertedId;
         } catch (error) {
             throw (error);
@@ -40,6 +42,7 @@ module.exports = {
             const cursor = publicationsCollection.find(filter, options).skip((page - 1) * limit).limit(limit)
             const publications = await cursor.toArray();
             const result = {publications: publications, total: publicationsCollectionCount};
+            client.close();
             return result;
         } catch (error) {
             throw (error);
@@ -52,6 +55,7 @@ module.exports = {
             const collectionName = 'publications';
             const publicationsCollection = database.collection(collectionName);
             const result = await publicationsCollection.deleteMany(filter, options);
+            client.close();
             return result;
         } catch (error) {
             throw (error);

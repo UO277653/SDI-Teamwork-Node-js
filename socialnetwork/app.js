@@ -3,6 +3,7 @@ let express = require('express');
 let path = require('path');
 let cookieParser = require('cookie-parser');
 let logger = require('morgan');
+let fs = require('fs');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -42,6 +43,11 @@ app.use(function(req, res, next) {
   // Debemos especificar todas las headers que se aceptan. Content-Type , token
   next();
 });
+
+const userRouterLog = require("./routes/userRouter");
+app.use("/users/signup", userRouterLog);
+app.use("/users/login", userRouterLog);
+app.use("/users/logout", userRouterLog);
 
 const userSessionRouter = require("./routes/userSessionRouter");
 app.use("/users", userSessionRouter);
@@ -89,8 +95,12 @@ app.set('view engine', 'twig');
 app.set('clave','abcdefg');
 app.set('crypto',crypto);
 
-
+//----------------------------- Logger --------------------------
+app.use(logger('common', {
+  stream: fs.createWriteStream('logs.txt')
+}));
 app.use(logger('dev'));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());

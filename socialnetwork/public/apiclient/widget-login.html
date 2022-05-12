@@ -1,3 +1,4 @@
+<!-- Interface for the login -->
 <div id="widget-login">
     <div class="form-group">
         <label class="control-label col-sm-2" for="email">Email:</label>
@@ -22,6 +23,8 @@
 
 <script>
     window.history.pushState("", "", "/apiclient/client.html?w=login");
+
+    // When clicking the login button the user is authenticated
     $("#boton-login").click(function() {
         $.ajax({
             url: URLbase + "/users/login",

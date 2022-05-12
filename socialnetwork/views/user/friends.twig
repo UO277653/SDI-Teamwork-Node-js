@@ -9,6 +9,7 @@
                 <th scope="col">Email</th>
                 <th scope="col">Name</th>
                 <th scope="col">Surname</th>
+                <th scope="col">Publications</th>
             </tr>
             </thead>
             <tbody>
@@ -17,6 +18,7 @@
                     <td>{{ friend.email }}</td>
                     <td>{{ friend.name }}</td>
                     <td>{{ friend.surname }}</td>
+                    <td><a href="/publications/list/{{ friend.email }}">List of publications</a></td>
                 </tr>
             {% endfor %}
             </tbody>
