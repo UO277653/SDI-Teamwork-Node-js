@@ -1,7 +1,7 @@
 const {ObjectId} = require("mongodb");
 
 module.exports = function (app, usersRepository, friendsRepository) {
-
+    let logger = app.get('logger');
 
     // To make our lives easier on the Twig side,
     // we will create a collection of tuples that
@@ -27,8 +27,7 @@ module.exports = function (app, usersRepository, friendsRepository) {
     }
 
     app.get('/request/list', function (req, res) {
-
-        console.log("USER REQUESTING FRIENDS LIST: " + req.session.user);
+        logger.info("[GET] /requests/list");
 
         let filter = { // Requests sent to or received by our user
             receiver: req.session.user,
@@ -57,6 +56,7 @@ module.exports = function (app, usersRepository, friendsRepository) {
 
     // Receives: id of a user
     app.post('/friends/request/:id', function (req, res) {
+        logger.info("[POST] /friends/requests/:id");
         if (req.session.user == null) {
             res.redirect("/users/signup" + "?message=User must be logged in."+ "&messageType=alert-danger");
             return;
@@ -104,6 +104,7 @@ module.exports = function (app, usersRepository, friendsRepository) {
 
     // Receives: id of a friend request
     app.post('/friends/accept/:id', function (req, res) {
+        logger.info("[POST] /friends/accept/:id");
         if (req.session.user == null) {
             res.redirect("/users/signup" + "?message=User must be logged in."+ "&messageType=alert-danger");
             return;
@@ -127,7 +128,8 @@ module.exports = function (app, usersRepository, friendsRepository) {
         })
     });
 
-    app.get("/friends/list", function(req, res) {
+    app.get("/friends", function(req, res) {
+        logger.info("[GET] /friends");
        let options = {};
        let filter = {
            $or:[
