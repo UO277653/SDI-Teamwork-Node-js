@@ -1,7 +1,7 @@
 const {ObjectId} = require("mongodb");
 
 module.exports = function (app, usersRepository, friendsRepository) {
-
+  let logger = app.get('logger');
 
 
   // To make our lives easier on the Twig side,
@@ -26,6 +26,7 @@ module.exports = function (app, usersRepository, friendsRepository) {
 
 
   app.get('/users', function (req, res) {
+    logger.info("[GET] /users");
     let filter = {};
     let options = {};
 
@@ -74,17 +75,19 @@ module.exports = function (app, usersRepository, friendsRepository) {
       });
 
     }).catch(error => {
+      logger.error("[GET] /users - Se ha producido un error al listar los usuarios");
       res.send("Se ha producido un error al listar los usuarios: " + error)
     })
 
   });
   
   app.get('/users/signup', function (req, res) {
-    console.log("Access to signup form")
+    logger.info("[GET] /users/signup");
     res.render("signup.twig", {session:req.session.user});
   });
 
   app.post('/users/signup', function (req, res) {
+    logger.info("[POST] /users/signup");
     let securePassword = app.get("crypto").createHmac('sha256', app.get('clave'))
         .update(req.body.password).digest('hex');
 
@@ -98,6 +101,7 @@ module.exports = function (app, usersRepository, friendsRepository) {
 
     validateSignup(userValidate, function(errors){
       if (errors!=null && errors.length>0){
+        logger.error("[POST] /users/signup - " + errors);
         res.redirect("/users/signup" +
             "?message="+errors+"&messageType=alert-danger");
       } else {
@@ -111,6 +115,7 @@ module.exports = function (app, usersRepository, friendsRepository) {
 
         usersRepository.getUsers({email: req.body.email}, {}).then( users => {
           if (users != null && users.length != 0){
+            logger.error("[POST] /users/signup - Email is already in use");
             res.redirect("/users/signup" +
                 "?message=Email is already in use"+
                 "&messageType=alert-danger");
@@ -121,12 +126,14 @@ module.exports = function (app, usersRepository, friendsRepository) {
               res.redirect("/users" + "?message=New user successfully registered" +
                   "&messageType=alert-success");
             }).catch(error => {
+              logger.error("[POST] /users/signup - An error has occurred adding the user");
               res.redirect("/users/signup" +
                   "?message=An error has occurred adding the user"+
                   "&messageType=alert-danger");
             });
           }
         }).catch(error => {
+          logger.error("[POST] /users/signup - An error has occurred");
           res.redirect("/users/signup" +
               "?message=An error has occurred"+
               "&messageType=alert-danger");
@@ -180,10 +187,12 @@ module.exports = function (app, usersRepository, friendsRepository) {
   }
 
   app.get('/users/login', function (req, res) {
+    logger.info("[GET] /users/login");
     res.render("login.twig", {session: req.session.user});
   })
 
   app.post('/users/login', function (req, res) {
+    logger.info("[POST] /users/login");
     let securePassword = app.get("crypto").createHmac('sha256', app.get('clave'))
         .update(req.body.password).digest('hex');
     let filter = {
@@ -193,6 +202,7 @@ module.exports = function (app, usersRepository, friendsRepository) {
 
     usersRepository.findUser(filter, {}).then(user => {
       if (user == null){
+        logger.error("[POST] /users/login - Wrong email or password");
         req.session.user = null;
         res.redirect("/users/login" +
             "?message=Wrong email or password"+
@@ -212,6 +222,7 @@ module.exports = function (app, usersRepository, friendsRepository) {
         }
       }
     }).catch(error => {
+      logger.error("[POST] /users/login - n error has occurred finding the user");
       req.session.user = null;
       res.redirect("/users/login" +
           "?message=An error has occurred finding the user"+
@@ -220,6 +231,7 @@ module.exports = function (app, usersRepository, friendsRepository) {
   });
 
   app.get('/users/logout', function (req, res) {
+    logger.info("[GET] /users/logout");
     req.session.user = null;
     res.redirect("/users/login" +
         "?message=User successfully logged out"+
