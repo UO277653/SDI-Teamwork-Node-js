@@ -33,7 +33,8 @@ module.exports = function (app, usersRepository, friendsRepository) {
         }
         friendsRepository.getRequests(filter, {}).then(async requests => {
             if (requests == null) {
-                res.redirect("/users"); // TODO: error
+                res.status(500);
+                res.redirect("/users");
                 return;
             }
 
@@ -66,7 +67,8 @@ module.exports = function (app, usersRepository, friendsRepository) {
                 return;
             }
             if (req.session.user === user.email) {
-                res.redirect("/users"); // TODO: error status - cannot send request to self
+                res.status(500);
+                res.redirect("/users");
                 return;
             }
 
@@ -78,7 +80,8 @@ module.exports = function (app, usersRepository, friendsRepository) {
             }
             friendsRepository.findRequest(filter, {}).then(existingRequest => {
                 if (existingRequest != null){
-                    res.redirect("/users");// TODO: error status - request already exists
+                    res.status(500);
+                    res.redirect("/users");
                     return;
                 }
 
@@ -88,9 +91,11 @@ module.exports = function (app, usersRepository, friendsRepository) {
                     status: "SENT"
                 };
                 friendsRepository.insertRequest(friendRequest).then(reqId => {
-                    res.redirect("/users"); // TODO - success status
+                    res.status(200);
+                    res.redirect("/users");
                 }).catch(error => {
-                    res.redirect("/users");// TODO: error status - request already exists
+                    res.status(500);
+                    res.redirect("/users");
                 });
             });
         }).catch(error => {
@@ -110,19 +115,23 @@ module.exports = function (app, usersRepository, friendsRepository) {
         let filter = {_id: ObjectId(req.params.id)};
         friendsRepository.findRequest(filter, {}).then(friendRequest => {
             if (friendRequest == null){
-                res.redirect("/users");// TODO: error status - no existing request
+                res.status(500);
+                res.redirect("/users");
             } else {
                 // Now that we've got the request, mark it as accepted and send it back to the db
                 friendRequest.status = "ACCEPTED";
                 friendsRepository.updateRequest(friendRequest)
                     .then(updateRes => {
-                        res.redirect("/users"); // TODO - success status
+                        res.status(200);
+                        res.redirect("/users");
                     }).catch(error => {
-                        res.redirect("/users");// TODO: error status - request already exists
+                        res.status(500);
+                        res.redirect("/users");
                     });
             }
         }).catch(error => {
-            res.redirect("/users");// TODO: error status
+            res.status(500);
+            res.redirect("/users");
         })
     });
 
