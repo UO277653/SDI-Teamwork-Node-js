@@ -202,7 +202,7 @@ class SocialNetworkApplicationTests {
 
     /**
      * W2. Inicio de sesión con datos válidos
-     * 		como administrador
+     * 		como usuario estandar
      */
     @Test
     @Order(6)
@@ -296,11 +296,6 @@ class SocialNetworkApplicationTests {
         // TERMINAR CON ASSERT
         Assertions.assertEquals(getNumberOfUsers(), elementos);
     }
-
-
-
-
-
 
     /**
      * W5. Admin: borrado múltiple de usuarios
@@ -898,10 +893,7 @@ class SocialNetworkApplicationTests {
     }
 
     private void addUser(String email, String name, String surname, String role){
-        mongoClient = MongoClients.create(URI);
-        db = mongoClient.getDatabase("socialNetwork");
-        String collectionName = "users";
-        MongoCollection userCollection = db.getCollection(collectionName);
+        MongoCollection userCollection = collection;
         try {
             userCollection.insertOne(new Document()
                     .append("email", email)
