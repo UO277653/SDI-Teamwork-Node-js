@@ -620,40 +620,53 @@ class SocialNetworkApplicationTests {
     @Test
     @Order(22)
     void PR22() {
+        Bson filterSender = Filters.eq("sender", "user08@email.com");
+        Bson filterStatus = Filters.eq("receiver", "user01@email.com");
 
-        //borrar friendship previa o utilizar otros usuarios
+        //delete all requests from user 08, just in case
+        requestsCollection.deleteMany(filterSender);
 
-        // log as userX
-        PO_LoginView.login(driver, "hola@sara.es", "hola");
+        long initNumberRequests = requestsCollection.countDocuments();
 
-        // either go to a list of users, or to the id of a specified user
-        driver.navigate().to("http://localhost:3000/users/user/6279adc8060673b3938c7125");
+        // log as user08
+        PO_LoginView.login(driver, "user08@email.com", "user08");
+        clickOnSendRequestButton();
 
-        // press send button (userY)
-        List<WebElement> sendButton = driver.findElements(By.id("sendBtn"));
-        sendButton.get(0).click();
-
-        // logout userX (igual es x url)
+        // logout user08 and send request
         driver.navigate().to("localhost:3000/users/logout");
-        //PO_LoginView.logout(driver);
+        SeleniumUtils.waitLoadElementsBy(driver, "text", "User successfully logged out", 200);
 
-        // log as userY
-        PO_LoginView.login(driver, "hola@sara.com", "hola");
+        // Check if request exists
+        Assertions.assertEquals(initNumberRequests+1, requestsCollection.countDocuments()); // a request was added
 
-        // go to http://localhost:3000/friends/list
-        driver.navigate().to("http://localhost:3000/friends/list");
+        // log as user01
+        PO_LoginView.fillLoginForm(driver, "user01@email.com", "user01");
+        SeleniumUtils.waitLoadElementsBy(driver, "text", "User successfully logged in", 200);
 
         int requests = 0;
         requests += PO_RequestListView.countRequestsOnPage(driver, 0);
 
-        // check that userX's invite is there (and accept it or not), we'll do it by checking if the email of userX is on page
-        SeleniumUtils.textIsPresentOnPage(driver, "hola@sara.es");
+        // check that user08's invite is there (and accept it or not), we'll do it by checking if the email of user08 is on page
+        SeleniumUtils.waitLoadElementsBy(driver, "text", "user08@email.com", 10);
+        SeleniumUtils.textIsPresentOnPage(driver, "user08@email.com");
+
+        // Assert counting the requests on the page
+        Assertions.assertEquals(1, requests);
+
+        // Accept the invite
         List<WebElement> acceptButton = driver.findElements(By.id("acceptBtn"));
         acceptButton.get(0).click();
 
-        // we could do an assert counting the requests on the page
-        Assertions.assertEquals(1, requests);
+        // Jump to friends list
+        driver.navigate().to("localhost:3000/friends/list");
 
+        // check that user08's invite is there (and accept it or not), we'll do it by checking if the email of user08 is on page
+        SeleniumUtils.waitLoadElementsBy(driver, "text", "user08@email.com", 10);
+        SeleniumUtils.textIsPresentOnPage(driver, "user08@email.com");
+
+
+        // delete created friendship for next test
+        requestsCollection.deleteOne(Filters.and(filterSender, filterStatus));
     }
 
     /**
