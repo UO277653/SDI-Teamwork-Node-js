@@ -43,6 +43,11 @@ app.use(function(req, res, next) {
   next();
 });
 
+const userRouter = require("./routes/userRouter");
+app.use("/users/signup", userRouter);
+app.use("/users/login", userRouter);
+app.use("/users/logout", userRouter);
+
 const userSessionRouter = require("./routes/userSessionRouter");
 app.use("/users", userSessionRouter);
 app.use("/publications/add", userSessionRouter);

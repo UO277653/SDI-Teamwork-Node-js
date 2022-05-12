@@ -30,10 +30,10 @@ class SocialNetworkApplicationTests {
 
 
     //Sara
-    //static String Geckodriver = "D:\\UNI\\3º\\2º cuatri\\SDI\\Lab\\sesion05\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
+    static String Geckodriver = "D:\\UNI\\3º\\2º cuatri\\SDI\\Lab\\sesion05\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
 
     //Diego
-    static String Geckodriver = "C:\\Users\\dimar\\Desktop\\sdi\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
+//    static String Geckodriver = "C:\\Users\\dimar\\Desktop\\sdi\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
 
     //Ari
 //    static String Geckodriver = "C:\\Users\\UO270119\\Desktop\\IIS (definitiva)\\3º - Tercero\\Segundo cuatri\\Sistemas Distribuidos e Internet\\Lab\\[materiales]\\5. Selenium\\PL-SDI-Sesión5-material\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
@@ -88,6 +88,37 @@ class SocialNetworkApplicationTests {
      * of the assignment.
      */
 
+//    @Test
+//    void generarUsuariosPublicaciones(){
+//
+////        for (int i = 8; i<=15; i++){
+////            String number = String.format("%02d", i);
+//            String name = "user15";
+//            String email = name + "@email.com";
+//            String surname = "Sdi 2022";
+//            String password = name;
+//            PO_LoginView.login(driver, email, password);
+//            PO_View.checkElementBy(driver, "class", "alert alert-success");
+//
+//            for (int j = 1; j<=10; j++){
+//                driver.navigate().to("localhost:3000/publications/add");
+//                WebElement title = driver.findElement(By.id("title"));
+//                title.click();
+//                title.clear();
+//                title.sendKeys("Publicacion " + j);
+//
+//                WebElement content = driver.findElement(By.id("content"));
+//                content.click();
+//                content.clear();
+//                content.sendKeys("my publi");
+//
+//                WebElement addButton = driver.findElement(By.id("add"));
+//                addButton.click();
+//            }
+//            //logout
+//            driver.navigate().to("localhost:3000/users/logout");
+////        }
+//    }
 
     /**
      * W1. Registro de usuario con datos válidos
