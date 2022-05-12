@@ -6,6 +6,7 @@
             <th>Author</th>
             <th>Date</th>
             <th>Text</th>
+            <th>Read</th>
             <th class="col-md-1"></th>
         </tr>
         </thead>
@@ -41,6 +42,25 @@
             success: function (response) {
                 let messages = response.result;
                 updateChatTable(messages);
+
+                // For each message mark as read
+                for(j = 0; j < messages.length; j++){
+
+                    $.ajax({
+                        url: URLbase + "/messages/setAsRead/" + messages[j]._id,
+                        type: "PUT",
+                        data: {user:Cookies.get("receiver")},
+                        dataType: 'json',
+                        headers: {"token": token, "user": user},
+                        success: function (response) {
+                            document.getElementById("message").value = "";
+                            loadChat();
+                        },
+                        error: function (error) {
+                            $("#main-container").load("widget-login.html");
+                        }
+                    });
+                }
             },
             error: function (error) {
                 $("#main-container").load("widget-login.html");
@@ -50,15 +70,22 @@
 
     // Function for appending to the chat table the
     function updateChatTable(chat) {
+
         $("#chatTableBody").empty(); // Vaciar la tabla
         for (i = 0; i < chat.length; i++) {
+
+            let readBlock = "";
+
+            if(chat[i].read == true){
+                readBlock = "<td>" +"read"+ "</td>"
+            }
 
             $("#chatTableBody").append(
                 "<tr>" +
                 "<td>" + chat[i].sender + "</td>" +
                 "<td>" + chat[i].date + "</td>" +
                 "<td>" + chat[i].text + "</td>" +
-
+                readBlock +
                 "</tr>");
         }
     }
@@ -85,11 +112,11 @@
         });
     }
 
-    // Updating the chat every 5 seconds
+    // Updating the chat every 10 seconds
     setInterval(function() {
         (loadChat())
-    }, 5000);
+    }, 15000);
 
 
-    loadChat();
+    //loadChat();
 </script>
