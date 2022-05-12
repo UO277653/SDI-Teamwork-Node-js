@@ -4,7 +4,7 @@ const {request} = require("express");
 module.exports = function (app, publicationsRepository, friendsRepository) {
 
     app.get('/publications/add', function (req, res) {
-        res.render("publications/add.twig", {session: req.session.user});
+        res.render("publications/add.twig", {sessionUser: req.session.user});
     });
 
     app.post('/publications/add', function (req, res) {
@@ -89,7 +89,7 @@ module.exports = function (app, publicationsRepository, friendsRepository) {
                             pages: pages,
                             currentPage: page,
                             author: author,
-                            session: req.session.user
+                            sessionUser: req.session.user
                         }
                         res.render("publications/list.twig", response);
                     }).catch(error => {
