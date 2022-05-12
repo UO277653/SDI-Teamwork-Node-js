@@ -1,3 +1,4 @@
+<!-- Interface of the chat -->
 <div id="widget-chat" >
     <table class="table table-hover">
         <thead>
@@ -11,6 +12,7 @@
         <tbody id="chatTableBody"></tbody>
     </table>
 
+    <!-- Form for sending a message -->
     <div class="form-group">
         <label class="control-label col-sm-2" for="message">Message:</label>
         <div class="col-sm-10">
@@ -26,6 +28,7 @@
 
 <script>
 
+    // Function for retrieving the messages between 2 users
     function loadChat() {
         $.ajax({
             url: URLbase + "/messages/conversation",
@@ -45,6 +48,7 @@
         });
     }
 
+    // Function for appending to the chat table the
     function updateChatTable(chat) {
         $("#chatTableBody").empty(); // Vaciar la tabla
         for (i = 0; i < chat.length; i++) {
@@ -59,6 +63,7 @@
         }
     }
 
+    // Function for adding a new message when submitting the form
     function addMessage( ) {
         $.ajax({
             url: URLbase + "/messages/add",
@@ -80,6 +85,7 @@
         });
     }
 
+    // Updating the chat every 5 seconds
     setInterval(function() {
         (loadChat())
     }, 5000);

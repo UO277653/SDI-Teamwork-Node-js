@@ -1,3 +1,4 @@
+<!-- Interface for seeing the friends, with a filter of the name -->
 <div id="widget-friends" >
     <!-- Búsqueda -->
     <input type="text" class="form-control" placeholder="Filtrar por nombre" id="filter-by-name"/>
@@ -16,8 +17,10 @@
 </div>
 
 <script>
+    // Variable for storing the friends
     var friends;
 
+    // When clicking the filter button the friends are filtered
     $('#filter-by-name').on('input',function(e){
         let filteredFriends = [];
         let filterValue = $("#filter-by-name").val();
@@ -25,6 +28,7 @@
         updateFriendsTable(filteredFriends);
     });
 
+    // Asking for the friends of the current user
     function loadFriends() {
         $.ajax({
             url: URLbase + "/friends/list",
@@ -42,16 +46,14 @@
         });
     }
 
+    // Variable for storing the last message
     let lastMessage;
 
+    // Appending the friends to the table
     function updateFriendsTable(friends) {
-
-
 
         $("#friendsTableBody").empty(); // Vaciar la tabla
         for (i = 0; i < friends.length; i++) {
-
-
 
             $("#friendsTableBody").append(
                 "<tr id=" + friends[i].email + ">" +
@@ -61,6 +63,7 @@
 
                 "</tr>");
 
+            // Retrieving the conversation
             $.ajax({
                 url: URLbase + "/messages/conversation",
                 type: "POST",
