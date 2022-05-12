@@ -23,10 +23,32 @@
     </div>
     <div class="collapse navbar-collapse" id="myNavbar">
       <ul class="nav navbar-nav">
-        <!-- rutas : ejemplo  { <li id="mybuy"><a href="/purchases">Compras</a></li> }-->
+
         <li class="dropdown">
 
-            <a class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <a class="btn btn-secondary dropdown-toggle" type="button" id="dropdownAdmin" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Admin
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a href="/admin/list">List of users</a>
+          </div>
+
+        </li>
+
+        <li class="dropdown">
+
+          <a class="btn btn-secondary dropdown-toggle" type="button" id="dropdownUsers" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Users
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a href="/users">List of users</a>
+          </div>
+
+        </li>
+
+        <li class="dropdown">
+
+            <a class="btn btn-secondary dropdown-toggle" type="button" id="dropdownPublications" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Publications
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -34,6 +56,28 @@
               <br>
               <a href="/publications/listown">List my publications</a>
             </div>
+
+        </li>
+
+        <li class="dropdown">
+
+          <a class="btn btn-secondary dropdown-toggle" type="button" id="dropdownFriends" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Friends
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a href="/friends/">List of friends</a>
+          </div>
+
+        </li>
+
+        <li class="dropdown">
+
+          <a class="btn btn-secondary dropdown-toggle" type="button" id="dropdownFriendRequests" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Friend requests
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a href="/request/list">List of friend requests</a>
+          </div>
 
         </li>
 

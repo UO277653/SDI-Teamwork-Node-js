@@ -43,17 +43,16 @@
     <!-- End of friends block -->
 </div>
 
-<!-- Pagination
     <div class="row text-center">
         <ul class="pagination">
-            {% for pagina in paginas %}
-                <li class="page-item" id="pi-{{ pagina }}">
+            {% for page in pages %}
+                <li class="page-item" id="id-{{ page }}">
                     <a class="page-link" href="/friendships?pg={{ pagina }}">{{ pagina }}</a>
                 </li>
             {% endfor %}
             <script>
-                $("#pi-" + "{{ actual }}").addClass("active");
+                $("#pi-" + "{{ currentPage }}").addClass("active");
             </script>
         </ul>
-    </div> -->
+    </div>
 {% endblock %}
