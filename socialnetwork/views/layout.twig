@@ -24,6 +24,7 @@
     <div class="collapse navbar-collapse" id="myNavbar">
       <ul class="nav navbar-nav">
 
+        {% if sessionUser=="admin@email.com" %}
         <li class="dropdown">
 
           <a class="btn btn-secondary dropdown-toggle" type="button" id="dropdownAdmin" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -34,6 +35,7 @@
           </div>
 
         </li>
+        {% endif %}
 
         <li class="dropdown">
 
