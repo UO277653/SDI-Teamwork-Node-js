@@ -1,7 +1,30 @@
 const {ObjectId} = require("mongodb");
 
 module.exports = function (app, usersRepository, friendsRepository) {
-  
+
+
+
+  // To make our lives easier on the Twig side,
+  // we will create a collection of tuples that
+  // contain the given user and the possible
+  // friend request involving the logged user.
+  function _usersListGenerateTuples(sessionUser, usersList, index, tupleCallback, onComplete) {
+    if (index >= usersList.length) {
+      onComplete();
+      return;
+    }
+    let otherUser = usersList[index];
+
+    friendsRepository.findRequestBetweenUsers(sessionUser, otherUser.email, friendReq => {
+      tupleCallback({
+        user: otherUser,
+        friendRequest: friendReq
+      });
+      _usersListGenerateTuples(sessionUser, usersList, index+1, tupleCallback, onComplete);
+    });
+  }
+
+
   app.get('/users', function (req, res) {
     let filter = {};
     let options = {};
@@ -34,14 +57,22 @@ module.exports = function (app, usersRepository, friendsRepository) {
           pages.push(i);
         }
       }
-      let response = {
-        users: result.users,
-        pages: pages,
-        currentPage: page,
-        session: req.session.user
-      }
 
-      res.render('user/users.twig', response);
+      let listedUsers = [];
+      let tupleCallback = (tuple) => {
+        listedUsers.push(tuple);
+      };
+      _usersListGenerateTuples(req.session.user, result.users, 0, tupleCallback, () => {
+
+        let response = {
+          listedUsers: listedUsers,
+          pages: pages,
+          currentPage: page,
+          session: req.session.user
+        }
+        res.render('user/users.twig', response);
+      });
+
     }).catch(error => {
       res.send("Se ha producido un error al listar los usuarios: " + error)
     })

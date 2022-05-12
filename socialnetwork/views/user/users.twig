@@ -29,25 +29,28 @@
             </tr>
             </thead>
             <tbody>
-            {% for user in users %}
+            {% for listedUser in listedUsers %}
                 <tr>
-                    <td>{{ user.email }}</td>
-                    <td>{{ user.name }}</td>
-                    <td>{{ user.surname }}</td>
+                    <td>{{ listedUser.user.email }}</td>
+                    <td>{{ listedUser.user.name }}</td>
+                    <td>{{ listedUser.user.surname }}</td>
                     <td>
-                        {% if isFriend %}
-                            <p>Amigos</p>
-                        {% else %}
-                            <form class="form-horizontal" method="post" action="/friends/request/{{ user._id }}" >
+                        {% if listedUser.friendRequest == null %}
+                            <form class="form-horizontal" method="post" action="/friends/request/{{ listedUser.user._id }}" >
                                 <div class="form-group">
                                     <div class="col-sm-offset-2 col-sm-10">
                                         <button type="submit" class="btn btn-primary" id="addFriendBtn">+ Add Friend</button>
                                     </div>
                                 </div>
                             </form>
-                            <!--
-                <a class="btn btn-primary pull-right" href="/friends/request/{{ user._id }}">Send Request</a>
-                -->
+                        {% else %}
+                        <div class="col-sm-offset-2 col-sm-10">
+                            {% if listedUser.friendRequest.status == "SENT" %}
+                                <button type="submit" class="btn btn-primary" disabled>Pending...</button>
+                            {% else %}
+                                <button type="submit" class="btn btn-primary" disabled>Friends!</button>
+                            {% endif %}
+                        </div>
                         {% endif %}
                     </td>
 

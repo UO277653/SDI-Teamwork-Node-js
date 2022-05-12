@@ -31,7 +31,7 @@ module.exports = function (app, usersRepository, friendsRepository, publications
                             $or:[
                                 {sender: user.email},
                                 {receiver: user.email}
-                            ]
+                            ],
                         }
                         friendsRepository.deleteFriendsOfUser(filterRequests, {});
                         let filterPublications = {

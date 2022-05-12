@@ -277,15 +277,15 @@ class SocialNetworkApplicationTests {
 
         // quitar antes las amistades y requests previas si tal
 
-        // log as userX
-        PO_LoginView.login(driver, "hola@sara.es", "hola");
+        // log as user01
+        PO_LoginView.login(driver, "user01@email.com", "user01");
 
-        // either go to a list of users, or to the id of a specified user
-        driver.navigate().to("http://localhost:3000/users/user/6279adc8060673b3938c7125");
+        // go to the list of users
+        driver.navigate().to("http://localhost:3000/users");
 
-        // press send button (userY)
-        List<WebElement> sendButton = driver.findElements(By.id("sendBtn"));
-        sendButton.get(0).click();
+        // press send button (user02)
+        List<WebElement> addButton = driver.findElements(By.id("addFriendBtn"));
+        addButton.get(0).click();
 
         // logout userX (igual es x url)
         driver.navigate().to("localhost:3000/users/logout");
@@ -323,7 +323,7 @@ class SocialNetworkApplicationTests {
         // comprobaremos que no se la podemos enviar
 
         // log as userX
-        PO_LoginView.login(driver, "hola@sara.es", "hola");
+        PO_LoginView.login(driver, "user01@email.es", "user01");
 
         // either go to a list of users, or to the id of a specified user
         driver.navigate().to("http://localhost:3000/users/user/6279adc8060673b3938c7125");
