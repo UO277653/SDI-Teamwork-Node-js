@@ -825,4 +825,77 @@ class SocialNetworkApplicationTests {
 
     }
 
+    /**
+     * C1. Autenticación de usuario
+     *      Inicio de sesión con datos válidos
+     */
+    @Test
+    @Order(32)
+    void PR32(){
+        PO_Api.goToApi(driver);
+
+        PO_Api.fillLoginForm(driver, "user01@email.com", "user01");
+
+        //redirige a widget-friends
+        List<WebElement> result = PO_View.checkElementBy(driver, "id", "widget-friends");
+        Assertions.assertNotNull(result.get(0));
+    }
+
+    /**
+     * C1. Autenticación de usuario
+     *      Inicio de sesión con datos inválidos (usuario no existente)
+     */
+    @Test
+    @Order(33)
+    void PR33(){
+        PO_Api.goToApi(driver);
+
+        PO_Api.fillLoginForm(driver, "pepe@pepe.com", "pepeluis");
+
+        //redirige a widget-friends
+        List<WebElement> result = PO_View.checkElementBy(driver, "class", "alert alert-danger");
+        Assertions.assertEquals("User not found", result.get(0).getText());
+    }
+
+    /**
+     * C1. Mostrar lista de amigos
+     *      Acceder a la lista de un amigos de un usuario que tenga al menos 3 amigos
+     */
+    @Test
+    @Order(34)
+    void PR34(){
+        PO_Api.goToApi(driver);
+        PO_Api.fillLoginForm(driver, "user01@email.com", "user01");
+
+        //redirige a widget-friends
+        List<WebElement> result = PO_View.checkElementBy(driver, "id", "widget-friends");
+        Assertions.assertNotNull(result.get(0));
+
+        List<WebElement> friendsList = PO_View.checkElementBy(driver, "free", "//tbody/tr");
+        Assertions.assertEquals(3, friendsList.size());
+    }
+
+    /**
+     * C1. Mostrar lista de amigos
+     *      Acceder a la lista de un amigos, realizar un filtrado para encontrar
+     *      a un amigo concreto
+     */
+    @Test
+    @Order(35)
+    void PR35(){
+        PO_Api.goToApi(driver);
+        PO_Api.fillLoginForm(driver, "user01@email.com", "user01");
+
+        //redirige a widget-friends
+        List<WebElement> result = PO_View.checkElementBy(driver, "id", "widget-friends");
+        Assertions.assertNotNull(result.get(0));
+
+        //filter
+        driver.findElement(By.id("filter-by-name")).click();
+        driver.findElement(By.id("filter-by-name")).sendKeys("Juan Apellido");
+        driver.findElement(By.id("update-btn")).click();
+
+        List<WebElement> friendsList = PO_View.checkElementBy(driver, "free", "Juan Apellido");
+        Assertions.assertEquals(3, friendsList.size());
+    }
 }
