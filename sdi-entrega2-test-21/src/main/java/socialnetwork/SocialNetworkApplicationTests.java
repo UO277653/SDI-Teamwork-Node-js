@@ -2,6 +2,8 @@ package socialnetwork;
 
 import com.mongodb.MongoException;
 import com.mongodb.client.*;
+import com.mongodb.client.model.Filters;
+import org.bson.conversions.Bson;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import socialnetwork.pageobjects.*;
@@ -33,10 +35,10 @@ class SocialNetworkApplicationTests {
     //static String Geckodriver = "D:\\UNI\\3º\\2º cuatri\\SDI\\Lab\\sesion05\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
 
     //Diego
-    static String Geckodriver = "C:\\Users\\dimar\\Desktop\\sdi\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
+    //static String Geckodriver = "C:\\Users\\dimar\\Desktop\\sdi\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
 
     //Ari
-//    static String Geckodriver = "C:\\Users\\UO270119\\Desktop\\IIS (definitiva)\\3º - Tercero\\Segundo cuatri\\Sistemas Distribuidos e Internet\\Lab\\[materiales]\\5. Selenium\\PL-SDI-Sesión5-material\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
+    static String Geckodriver = "C:\\Users\\UO270119\\Desktop\\IIS (definitiva)\\3º - Tercero\\Segundo cuatri\\Sistemas Distribuidos e Internet\\Lab\\[materiales]\\5. Selenium\\PL-SDI-Sesión5-material\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
 
     static WebDriver driver = getDriver(PathFirefox, Geckodriver);
     static String URL = "http://localhost:3000";
@@ -44,7 +46,10 @@ class SocialNetworkApplicationTests {
     static MongoClient mongoClient;
     static MongoDatabase db;
 
-    static MongoCollection<Document> collection;
+    static MongoCollection<Document> usersCollection;
+    static MongoCollection<Document> messagesCollection;
+    static MongoCollection<Document> publicationsCollection;
+    static MongoCollection<Document> requestsCollection;
 
     public static WebDriver getDriver(String PathFirefox, String Geckodriver) {
         System.setProperty("webdriver.firefox.bin", PathFirefox);
@@ -58,8 +63,10 @@ class SocialNetworkApplicationTests {
     static public void begin() {
         mongoClient = MongoClients.create(URI);
         db = mongoClient.getDatabase("socialNetwork");
-        collection = db.getCollection("users");
-
+        usersCollection = db.getCollection("users");
+        messagesCollection = db.getCollection("messages");
+        publicationsCollection = db.getCollection("publications");
+        requestsCollection = db.getCollection("friendRequests");
     }
 
     //Al finalizar la última prueba
@@ -126,15 +133,15 @@ class SocialNetworkApplicationTests {
     @Test
     @Order(1)
     void PR01(){
-        long initNumberUsers = collection.countDocuments();
+        long initNumberUsers = usersCollection.countDocuments();
         PO_SignUpView.signup(driver, "sarap@uniovi.es", "Paco", "Perez", "123456", "123456");
         String text = "New user successfully registered";
         String str = driver.findElement(By.className("alert")).getText();
         Assertions.assertEquals(text, str);
 
-        Assertions.assertEquals(initNumberUsers+1, collection.countDocuments()); //one more user
+        Assertions.assertEquals(initNumberUsers+1, usersCollection.countDocuments()); //one more user
 
-        collection.deleteOne(eq("email", "sarap@uniovi.es"));
+        usersCollection.deleteOne(eq("email", "sarap@uniovi.es"));
     }
 
     /**
@@ -144,10 +151,10 @@ class SocialNetworkApplicationTests {
     @Test
     @Order(2)
     void PR02() {
-        long initNumberUsers = collection.countDocuments();
+        long initNumberUsers = usersCollection.countDocuments();
         PO_SignUpView.signup(driver, "", "", "", "123456", "123456");
 
-        Assertions.assertEquals(initNumberUsers, collection.countDocuments()); //no user was added
+        Assertions.assertEquals(initNumberUsers, usersCollection.countDocuments()); //no user was added
 
         List<WebElement> elements = PO_View.checkElementBy(driver, "text", "Sign up");
         Assertions.assertEquals("Sign up", elements.get(0).getText());
@@ -160,12 +167,12 @@ class SocialNetworkApplicationTests {
     @Test
     @Order(3)
     void PR03() {
-        long initNumberUsers = collection.countDocuments();
+        long initNumberUsers = usersCollection.countDocuments();
         PO_SignUpView.signup(driver, "sara@uniovi.com", "Paco", "Perez", "123456", "122222");
         String text = "Passwords do not match";
         String str = driver.findElement(By.className("alert")).getText();
         Assertions.assertEquals(text, str);
-        Assertions.assertEquals(initNumberUsers, collection.countDocuments());//no user was added
+        Assertions.assertEquals(initNumberUsers, usersCollection.countDocuments());//no user was added
     }
 
     /**
@@ -175,7 +182,7 @@ class SocialNetworkApplicationTests {
     @Test
     @Order(4)
     void PR04() {
-        long initNumberUsers = collection.countDocuments();
+        long initNumberUsers = usersCollection.countDocuments();
 
         PO_SignUpView.signup(driver, "user01@email.com", "Paco", "Perez", "123456", "123456");
 
@@ -183,7 +190,7 @@ class SocialNetworkApplicationTests {
         String str = driver.findElement(By.className("alert")).getText();
         Assertions.assertEquals(text, str);
 
-        Assertions.assertEquals(initNumberUsers, collection.countDocuments());//no user was added
+        Assertions.assertEquals(initNumberUsers, usersCollection.countDocuments());//no user was added
     }
 
     /**
@@ -456,6 +463,7 @@ class SocialNetworkApplicationTests {
 
 
 
+
     /**
      * W8. Enviar una invitación de amistad a un usuario
      * Desde el listado de usuarios de la aplicación, enviar una invitación de amistad a un usuario. Comprobar que la
@@ -464,39 +472,44 @@ class SocialNetworkApplicationTests {
     @Test
     @Order(19)
     void PR19() {
+        Bson filterSender = Filters.eq("sender", "user08@email.com");
+        Bson filterStatus = Filters.eq("receiver", "user01@email.com");
 
-        // quitar antes las amistades y requests previas si tal
+        //delete all requests from user 08, just in case
+        requestsCollection.deleteMany(filterSender);
 
-        // log as user01
-        PO_LoginView.login(driver, "user01@email.com", "user01");
+        long initNumberRequests = requestsCollection.countDocuments();
 
-        // go to the list of users
-        driver.navigate().to("http://localhost:3000/users");
+        // log as user08
+        PO_LoginView.login(driver, "user08@email.com", "user08");
 
-        // press send button (user02)
-        List<WebElement> addButton = driver.findElements(By.id("addFriendBtn"));
+        // press send button (user01), with timeout to have time to load
+        List<WebElement> addButton = SeleniumUtils.waitLoadElementsBy(driver, "id", "addFriendBtn", 100);
         addButton.get(0).click();
 
-        // logout userX (igual es x url)
+        // logout user08
         driver.navigate().to("localhost:3000/users/logout");
-        //PO_LoginView.logout(driver);
+        SeleniumUtils.waitLoadElementsBy(driver, "text", "User successfully logged out", 100);
 
-        // log as userY
-        PO_LoginView.login(driver, "hola@sara.com", "hola");
+        // Check if request exists
+        Assertions.assertEquals(initNumberRequests+1, requestsCollection.countDocuments()); // a request was added
 
-        // go to http://localhost:3000/friends/list
-        driver.navigate().to("http://localhost:3000/friends/list");
+        // log as user01
+        PO_LoginView.fillLoginForm(driver, "user01@email.com", "user01");
+        SeleniumUtils.waitLoadElementsBy(driver, "text", "User successfully logged in", 200);
 
         int requests = 0;
         requests += PO_RequestListView.countRequestsOnPage(driver, 0);
 
-        // check that userX's invite is there (and accept it or not), we'll do it by checking if the email of userX is on page
-        SeleniumUtils.textIsPresentOnPage(driver, "hola@sara.es");
-        List<WebElement> acceptButton = driver.findElements(By.id("acceptBtn"));
-        acceptButton.get(0).click();
+        // check that user08's invite is there (and accept it or not), we'll do it by checking if the email of user08 is on page
+        SeleniumUtils.waitLoadElementsBy(driver, "text", "user08@email.com", 10);
+        SeleniumUtils.textIsPresentOnPage(driver, "user08@email.com");
 
-        // we could do an assert counting the requests on the page
+        // Assert counting the requests on the page
         Assertions.assertEquals(1, requests);
+
+        // delete created friendship for next test
+        requestsCollection.deleteOne(Filters.and(filterSender, filterStatus));
     }
 
     /**
@@ -509,6 +522,26 @@ class SocialNetworkApplicationTests {
     @Order(20)
     void PR20() {
 
+
+        Bson filterSender = Filters.eq("sender", "user08@email.com");
+        Bson filterStatus = Filters.eq("receiver", "user01@email.com");
+
+        //delete all requests from user 08, just in case
+        requestsCollection.deleteMany(filterSender);
+
+        long initNumberRequests = requestsCollection.countDocuments();
+
+        // log as user08
+        PO_LoginView.login(driver, "user08@email.com", "user08");
+
+        // press send button (user01), with timeout to have time to load
+        List<WebElement> addButton = SeleniumUtils.waitLoadElementsBy(driver, "id", "addFriendBtn", 10);
+        addButton.get(0).click();
+
+
+
+
+        /**
         // vamos a hacerlo de manera que como en el test anterior enviamos la invitación de sara es a sara com
         // comprobaremos que no se la podemos enviar
 
@@ -522,6 +555,7 @@ class SocialNetworkApplicationTests {
         SeleniumUtils.textIsPresentOnPage(driver, "Pending...");
 
         // no sé si le haría falta un assert
+         */
 
     }
 
@@ -913,7 +947,7 @@ class SocialNetworkApplicationTests {
     }
 
     private void addUser(String email, String name, String surname, String role){
-        MongoCollection userCollection = collection;
+        MongoCollection userCollection = usersCollection;
         try {
             userCollection.insertOne(new Document()
                     .append("email", email)

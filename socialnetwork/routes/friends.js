@@ -28,6 +28,8 @@ module.exports = function (app, usersRepository, friendsRepository) {
 
     app.get('/request/list', function (req, res) {
 
+        console.log("USER REQUESTING FRIENDS LIST: " + req.session.user);
+
         let filter = { // Requests sent to or received by our user
             receiver: req.session.user,
             status: "SENT"

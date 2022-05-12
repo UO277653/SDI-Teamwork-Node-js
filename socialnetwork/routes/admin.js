@@ -27,6 +27,12 @@ module.exports = function (app, usersRepository, friendsRepository, publications
                 if (item[0].length == 1) {
                     let filter = {_id: ObjectId(item)};
                     usersRepository.findUser(filter, {}).then( user => {
+
+                        if(user==null) {
+                            console.log("admin::delete found a null user!");
+                            return;
+                        }
+
                         let filterRequests = {
                             $or:[
                                 {sender: user.email},
