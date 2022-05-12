@@ -81,7 +81,7 @@ module.exports = function (app, usersRepository, friendsRepository) {
   
   app.get('/users/signup', function (req, res) {
     console.log("Access to signup form")
-    res.render("signup.twig", {session:null});
+    res.render("signup.twig", {session:req.session.user});
   });
 
   app.post('/users/signup', function (req, res) {
@@ -180,7 +180,7 @@ module.exports = function (app, usersRepository, friendsRepository) {
   }
 
   app.get('/users/login', function (req, res) {
-    res.render("login.twig", {session: null});
+    res.render("login.twig", {session: req.session.user});
   })
 
   app.post('/users/login', function (req, res) {
