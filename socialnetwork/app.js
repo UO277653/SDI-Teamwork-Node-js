@@ -44,10 +44,10 @@ app.use(function(req, res, next) {
   next();
 });
 
-const userRouter = require("./routes/userRouter");
-app.use("/users/signup", userRouter);
-app.use("/users/login", userRouter);
-app.use("/users/logout", userRouter);
+const userRouterLog = require("./routes/userRouter");
+app.use("/users/signup", userRouterLog);
+app.use("/users/login", userRouterLog);
+app.use("/users/logout", userRouterLog);
 
 const userSessionRouter = require("./routes/userSessionRouter");
 app.use("/users", userSessionRouter);

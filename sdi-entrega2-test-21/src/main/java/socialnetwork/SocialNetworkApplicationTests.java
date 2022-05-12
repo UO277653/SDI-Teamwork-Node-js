@@ -33,7 +33,7 @@ class SocialNetworkApplicationTests {
     //static String Geckodriver = "D:\\UNI\\3º\\2º cuatri\\SDI\\Lab\\sesion05\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
 
     //Diego
-//    static String Geckodriver = "C:\\Users\\dimar\\Desktop\\sdi\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
+    //static String Geckodriver = "C:\\Users\\dimar\\Desktop\\sdi\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
 
     //Ari
 //    static String Geckodriver = "C:\\Users\\UO270119\\Desktop\\IIS (definitiva)\\3º - Tercero\\Segundo cuatri\\Sistemas Distribuidos e Internet\\Lab\\[materiales]\\5. Selenium\\PL-SDI-Sesión5-material\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
@@ -202,7 +202,7 @@ class SocialNetworkApplicationTests {
 
     /**
      * W2. Inicio de sesión con datos válidos
-     * 		como administrador
+     * 		como usuario estandar
      */
     @Test
     @Order(6)
@@ -296,11 +296,6 @@ class SocialNetworkApplicationTests {
         // TERMINAR CON ASSERT
         Assertions.assertEquals(getNumberOfUsers(), elementos);
     }
-
-
-
-
-
 
     /**
      * W5. Admin: borrado múltiple de usuarios
@@ -648,12 +643,15 @@ class SocialNetworkApplicationTests {
         Assertions.assertEquals(2, friends.size());
     }
 
-
+    /**
+     * [Prueba24] Ir al formulario crear publicaciones, rellenarla con datos válidos y pulsar el botón Submit.
+     * Comprobar que la publicación sale en el listado de publicaciones de dicho usuario
+     */
     @Test
     @Order(24)
     void PR24(){
 
-        PO_LoginView.login(driver, "prueba1@prueba1.com", "prueba1");
+        PO_LoginView.login(driver, "user06@email.com", "user06");
 
         driver.navigate().to("localhost:3000/publications/add");
         WebElement title = driver.findElement(By.id("title"));
@@ -673,11 +671,15 @@ class SocialNetworkApplicationTests {
 
     }
 
+    /**
+     * [Prueba25] Ir al formulario de crear publicaciones, rellenarla con datos inválidos (campo título vacío) y
+     * pulsar el botón Submit. Comprobar que se muestra el mensaje de campo obligatorio.
+     */
     @Test
     @Order(25)
     void PR25(){
 
-        PO_LoginView.login(driver, "prueba1@prueba1.com", "prueba1");
+        PO_LoginView.login(driver, "user06@email.com", "user06");
 
         driver.navigate().to("localhost:3000/publications/add");
         WebElement title = driver.findElement(By.id("title"));
@@ -700,7 +702,7 @@ class SocialNetworkApplicationTests {
     @Test
     @Order(25)
     void PR25_2(){
-        PO_LoginView.login(driver, "prueba1@prueba1.com", "prueba1");
+        PO_LoginView.login(driver, "user06@email.com", "user06");
 
         driver.navigate().to("localhost:3000/publications/add");
         WebElement title = driver.findElement(By.id("title"));
@@ -720,24 +722,37 @@ class SocialNetworkApplicationTests {
 
     }
 
+    /**
+     * [Prueba26] Mostrar el listado de publicaciones de un usuario y comprobar que se muestran todas las que
+     * existen para dicho usuario.
+     */
     @Test
     @Order(26)
     void PR26(){
-        PO_LoginView.login(driver, "onepublicationuser@gmail.com", "password");
+        PO_LoginView.login(driver, "user06@email.com", "user06");
 
         driver.navigate().to("localhost:3000/publications/listown");
 
-        Assertions.assertTrue(driver.getPageSource().contains("test"));
+        Assertions.assertTrue(driver.getPageSource().contains("Publications for user06@email.com"));
 
     }
 
+    /**
+     * [Prueba27] Mostrar el listado de publicaciones de un usuario amigo y comprobar que se muestran todas
+     * las que existen para dicho usuario.
+     */
     @Test
     @Order(27)
     void PR27(){
 
-        PO_LoginView.login(driver, "usuarioAmigo1@gmail.com", "password");
+        //Dos usuarios que son amigos
+        String friend1Email = "user06@email.com" ;
+        String friend1Password = "user06";
+        String friend2Email = "user05@email.com" ;
 
-        driver.navigate().to("localhost:3000/publications/list/usuarioAmigo2@gmail.com");
+        PO_LoginView.login(driver, friend1Email, "user06");
+
+        driver.navigate().to("localhost:3000/publications/list/" + friend2Email);
 
         Assertions.assertTrue(driver.getPageSource().contains("test"));
 
@@ -747,7 +762,7 @@ class SocialNetworkApplicationTests {
     @Test
     @Order(28)
     void PR28(){
-        PO_LoginView.login(driver, "usuarioAmigo1@gmail.com", "password");
+        PO_LoginView.login(driver, "user06@email.com", "user06");
 
         driver.navigate().to("localhost:3000/publications/list/prueba1@prueba1.com");
 
@@ -898,10 +913,7 @@ class SocialNetworkApplicationTests {
     }
 
     private void addUser(String email, String name, String surname, String role){
-        mongoClient = MongoClients.create(URI);
-        db = mongoClient.getDatabase("socialNetwork");
-        String collectionName = "users";
-        MongoCollection userCollection = db.getCollection(collectionName);
+        MongoCollection userCollection = collection;
         try {
             userCollection.insertOne(new Document()
                     .append("email", email)
