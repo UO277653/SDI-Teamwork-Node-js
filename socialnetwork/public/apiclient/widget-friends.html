@@ -67,7 +67,6 @@
                 "<td>" + friends[i].email + "</td>" +
                 "<td>" + friends[i].name + "</td>" +
                 "<td>" + friends[i].surname + "</td>" +
-
                 "</tr>");
 
             // Retrieving the conversation
@@ -87,6 +86,16 @@
 
                         lastMessage = response.result[0];
 
+                        let unread = 0;
+
+                        for(z = 0; z < response.result.length; z++){
+
+                            if(!response.result[z].read){
+                                unread++;
+                            }
+
+                        }
+
                         array.push(response.result[0]);
 
                         sender = lastMessage.sender.toString();
@@ -99,7 +108,7 @@
                         let newLastMessage = document.createElement("a");
 
                         newLastMessage.id = id;
-                        newLastMessage.innerHTML =  lastMessage.date + " " + lastMessage.text;
+                        newLastMessage.innerHTML =  lastMessage.date + " " + lastMessage.text + " Unread messages: " + unread;
                         newLastMessage.addEventListener("click", function() {chat(senderString, receiverString);}, false);
 
                         $("#friendsTableBody").append(newLastMessage);
