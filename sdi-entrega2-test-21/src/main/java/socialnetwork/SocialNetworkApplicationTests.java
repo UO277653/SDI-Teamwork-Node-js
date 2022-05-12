@@ -840,7 +840,7 @@ class SocialNetworkApplicationTests {
     void PR30() {
 
         // Go to the friends list page
-        driver.navigate().to("localhost:3000/friends/list");
+        driver.navigate().to("localhost:3000/friends");
 
         // Make sure that we have been redirected to the login page
         Assertions.assertEquals(driver.getCurrentUrl(), "http://localhost:3000/users/login");
