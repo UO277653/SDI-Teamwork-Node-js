@@ -484,12 +484,12 @@ class SocialNetworkApplicationTests {
         PO_LoginView.login(driver, "user08@email.com", "user08");
 
         // press send button (user01), with timeout to have time to load
-        List<WebElement> addButton = SeleniumUtils.waitLoadElementsBy(driver, "id", "addFriendBtn", 100);
+        List<WebElement> addButton = SeleniumUtils.waitLoadElementsBy(driver, "id", "addFriendBtn", 200);
         addButton.get(0).click();
 
         // logout user08
         driver.navigate().to("localhost:3000/users/logout");
-        SeleniumUtils.waitLoadElementsBy(driver, "text", "User successfully logged out", 100);
+        SeleniumUtils.waitLoadElementsBy(driver, "text", "User successfully logged out", 200);
 
         // Check if request exists
         Assertions.assertEquals(initNumberRequests+1, requestsCollection.countDocuments()); // a request was added
@@ -521,42 +521,29 @@ class SocialNetworkApplicationTests {
     @Test
     @Order(20)
     void PR20() {
-
-
         Bson filterSender = Filters.eq("sender", "user08@email.com");
         Bson filterStatus = Filters.eq("receiver", "user01@email.com");
 
         //delete all requests from user 08, just in case
         requestsCollection.deleteMany(filterSender);
 
-        long initNumberRequests = requestsCollection.countDocuments();
-
         // log as user08
         PO_LoginView.login(driver, "user08@email.com", "user08");
 
         // press send button (user01), with timeout to have time to load
         List<WebElement> addButton = SeleniumUtils.waitLoadElementsBy(driver, "id", "addFriendBtn", 10);
+        int requestButtonsCount = addButton.size();
         addButton.get(0).click();
 
+        // Wait for invite button to update
+        SeleniumUtils.waitLoadElementsBy(driver, "text", "Pending...", 200);
 
+        // Check the button is no longer available
+        addButton = SeleniumUtils.waitLoadElementsBy(driver, "id", "addFriendBtn", 10);
+        Assertions.assertEquals(requestButtonsCount-1, addButton.size());
 
-
-        /**
-        // vamos a hacerlo de manera que como en el test anterior enviamos la invitación de sara es a sara com
-        // comprobaremos que no se la podemos enviar
-
-        // log as userX
-        PO_LoginView.login(driver, "user01@email.es", "user01");
-
-        // either go to a list of users, or to the id of a specified user
-        driver.navigate().to("http://localhost:3000/users/user/6279adc8060673b3938c7125");
-
-        // check if it's pending, in that case, 'pending...' appears
-        SeleniumUtils.textIsPresentOnPage(driver, "Pending...");
-
-        // no sé si le haría falta un assert
-         */
-
+        // delete created friendship for next test
+        requestsCollection.deleteOne(Filters.and(filterSender, filterStatus));
     }
 
     /**
