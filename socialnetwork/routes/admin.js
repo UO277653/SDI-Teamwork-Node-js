@@ -1,7 +1,7 @@
 const {ObjectId} = require("mongodb");
 
 module.exports = function (app, usersRepository, friendsRepository, publicationsRepository, messagesRepository) {
-
+    let logger = app.get('logger');
     /**
      * It was decided that it was more suitable to create a specific .js file for admin functionalities, due to the
      * ease that it provides when checking if the right user is accessing these pages (it has to be the admin user)
@@ -10,6 +10,7 @@ module.exports = function (app, usersRepository, friendsRepository, publications
      * It works with the request and returns the view with all the users as the response
      */
     app.get('/admin/list', function (req, res) {
+        logger.info("[GET] /admin/list");
 
         usersRepository.getUsersAdmin({}, {}).then(users => {
             res.render('admin/users.twig', {users: users, sessionUser: req.session.user});
@@ -19,7 +20,7 @@ module.exports = function (app, usersRepository, friendsRepository, publications
     });
 
     app.post('/admin/delete', function (req, res) {
-
+        logger.info("[POST] /admin/delete");
         for (var key in req.body) {
             if (req.body.hasOwnProperty(key)) {
                 item = req.body[key];
@@ -27,6 +28,12 @@ module.exports = function (app, usersRepository, friendsRepository, publications
                 if (item[0].length == 1) {
                     let filter = {_id: ObjectId(item)};
                     usersRepository.findUser(filter, {}).then( user => {
+
+                        if(user==null) {
+                            console.log("admin::delete found a null user!");
+                            return;
+                        }
+
                         let filterRequests = {
                             $or:[
                                 {sender: user.email},

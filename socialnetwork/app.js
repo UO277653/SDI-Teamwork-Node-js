@@ -2,13 +2,16 @@ let createError = require('http-errors');
 let express = require('express');
 let path = require('path');
 let cookieParser = require('cookie-parser');
-let logger = require('morgan');
+// let logger = require('morgan');
 let fs = require('fs');
+let log4js = require('log4js');
+let logger = log4js.getLogger();
+logger.level = "debug";
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+
+let indexRouter = require('./routes/index');
 let app = express();
-
+app.set('logger', logger);
 let jwt=require('jsonwebtoken');
 app.set('jwt', jwt);
 let expressSession = require('express-session');

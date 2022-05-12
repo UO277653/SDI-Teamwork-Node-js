@@ -1,4 +1,3 @@
-
 ::ffff:127.0.0.1 - - [12/May/2022:20:20:14 +0000] "GET /apiclient/client.html HTTP/1.1" 304 -
 ::ffff:127.0.0.1 - - [12/May/2022:20:20:14 +0000] "GET /javascripts/cookie.js HTTP/1.1" 304 -
 ::ffff:127.0.0.1 - - [12/May/2022:20:20:14 +0000] "GET /images/logo.png HTTP/1.1" 404 3973
@@ -26,3 +25,5 @@
 ::1 - - [12/May/2022:19:59:44 +0000] "GET /apiclient/widget-login.html HTTP/1.1" 304 -
 ::1 - - [12/May/2022:19:59:50 +0000] "GET /apiclient/widget-friends.html HTTP/1.1" 304 -
 ::1 - - [12/May/2022:19:59:54 +0000] "GET /apiclient/widget-chat.html HTTP/1.1" 304 -
+::ffff:127.0.0.1 - - [12/May/2022:20:08:51 +0000] "GET / HTTP/1.1" 200 3647
+::ffff:127.0.0.1 - - [12/May/2022:20:08:52 +0000] "GET /favicon.ico HTTP/1.1" 404 3647
