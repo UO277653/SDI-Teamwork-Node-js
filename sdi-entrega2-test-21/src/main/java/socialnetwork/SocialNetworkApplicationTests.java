@@ -951,6 +951,88 @@ class SocialNetworkApplicationTests {
         Assertions.assertTrue(newFriendsListSize >= friendsListSize);
     }
 
+    /**
+     * C5
+     * Identificarse en la aplicación y enviar un mensaje a un amigo. Validar que el mensaje enviado
+     * aparece en el chat. Identificarse después con el usuario que recibió el mensaje y validar que tiene un
+     * mensaje sin leer. Entrar en el chat y comprobar que el mensaje pasa a tener el estado leído.
+     */
+    @Test
+    @Order(38)
+    void PR38(){
+        PO_Api.goToApi(driver);
+        PO_Api.fillLoginForm(driver, "user01@email.com", "user01");
+
+        //redirige a widget-friends
+        List<WebElement> result = PO_View.checkElementBy(driver, "id", "widget-friends");
+        Assertions.assertNotNull(result.get(0));
+
+        SeleniumUtils.waitLoadElementsBy(driver, "id", "user02@email.com",30);
+        SeleniumUtils.waitLoadElementsBy(driver, "id", "message1user02@email.com",30).get(0);
+
+        driver.findElement(By.id("message1user02@email.com")).click();
+
+        driver.findElement(By.id("message")).click();
+        driver.findElement(By.id("message")).sendKeys("this is a test message for C5");
+        driver.findElement(By.id("boton-add")).click();
+
+        SeleniumUtils.waitLoadElementsBy(driver, "text", "this is a test message for C5",30);
+
+        PO_Api.goToApi(driver);
+        PO_Api.fillLoginForm(driver, "user02@email.com", "user02");
+
+        //redirige a widget-friends
+        result = PO_View.checkElementBy(driver, "id", "widget-friends");
+        Assertions.assertNotNull(result.get(0));
+
+        SeleniumUtils.waitLoadElementsBy(driver, "id", "user01@email.com",30);
+        SeleniumUtils.waitLoadElementsBy(driver, "id", "message1user01@email.com",30);
+
+        Assertions.assertTrue(driver.getPageSource().contains("Read"));
+
+
+    }
+
+
+    @Test
+    @Order(39)
+    void PR39(){
+        PO_Api.goToApi(driver);
+        PO_Api.fillLoginForm(driver, "user01@email.com", "user01");
+
+        //redirige a widget-friends
+        List<WebElement> result = PO_View.checkElementBy(driver, "id", "widget-friends");
+        Assertions.assertNotNull(result.get(0));
+
+        SeleniumUtils.waitLoadElementsBy(driver, "id", "user02@email.com",30);
+        SeleniumUtils.waitLoadElementsBy(driver, "id", "message1user02@email.com",30);
+
+        driver.findElement(By.id("message")).click();
+        driver.findElement(By.id("message")).sendKeys("this is a test message");
+        driver.findElement(By.id("boton-add")).click();
+
+        driver.findElement(By.id("message")).click();
+        driver.findElement(By.id("message")).sendKeys("this is a test message");
+        driver.findElement(By.id("boton-add")).click();
+
+        driver.findElement(By.id("message")).click();
+        driver.findElement(By.id("message")).sendKeys("this is a test message");
+        driver.findElement(By.id("boton-add")).click();
+
+
+        PO_Api.goToApi(driver);
+        PO_Api.fillLoginForm(driver, "user02@email.com", "user02");
+
+        //redirige a widget-friends
+        result = PO_View.checkElementBy(driver, "id", "widget-friends");
+        Assertions.assertNotNull(result.get(0));
+
+        SeleniumUtils.waitLoadElementsBy(driver, "id", "user02@email.com",30);
+        SeleniumUtils.waitLoadElementsBy(driver, "id", "message1user01@email.com",30);
+
+    }
+
+
     private int getNumberOfUsers(){
 
         mongoClient = MongoClients.create(URI);
