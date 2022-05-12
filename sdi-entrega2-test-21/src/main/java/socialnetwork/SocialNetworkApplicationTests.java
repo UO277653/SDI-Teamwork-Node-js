@@ -10,7 +10,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.bson.Document;
-import org.bson.types.ObjectId;
 import socialnetwork.util.*;
 
 import java.util.List;
@@ -23,10 +22,11 @@ class SocialNetworkApplicationTests {
     static String PathFirefox = "C:\\Program Files\\Mozilla Firefox\\firefox.exe";
 
     // Jonas
-//    static String Geckodriver = "C:\\Users\\Alejandro\\Desktop\\SDI-2022\\software\\software\\geckodriver-v0.27.0-win64\\geckodriver.exe";
+    static String Geckodriver = "C:\\Users\\Alejandro\\Desktop\\SDI-2022\\software\\software\\geckodriver-v0.27.0-win64\\geckodriver.exe";
 
     // Adrian
-    static String Geckodriver = "C:\\Users\\adria\\OneDrive\\Escritorio\\UNIVERSIDAD\\AÑO 3\\SEMESTRE 2\\Sistemas Distribuidos e Internet\\Laboratorio\\Lab5\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
+//    static String Geckodriver = "C:\\Users\\adria\\OneDrive\\Escritorio\\UNIVERSIDAD\\AÑO 3\\SEMESTRE 2\\Sistemas Distribuidos e Internet\\Laboratorio\\Lab5\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
+
 
 
     //Sara
@@ -404,6 +404,8 @@ class SocialNetworkApplicationTests {
         elementos += PO_UserListView.countUsersOnPage(driver, 2);
         elementos += PO_UserListView.countUsersOnPage(driver, 3);
         elementos += PO_UserListView.countUsersOnPage(driver, 4);
+        elementos += PO_UserListView.countUsersOnPage(driver, 5);
+        elementos += PO_UserListView.countUsersOnPage(driver, 6);
 
         // all users but the deleted ones and the admin and logged in users
         Assertions.assertEquals(getNumberOfUsers() - (1 + numOfAdmins), elementos);
@@ -637,10 +639,13 @@ class SocialNetworkApplicationTests {
     @Order(23)
     void PR23() {
         PO_LoginView.login(driver, "user01@email.com", "user01");
-        driver.findElement(By.id("friendList")).click();
+        driver.findElement(By.id("dropdownFriends")).click();
+        driver.findElement(By.id("listFriendsOption")).click();
+
+        final int numOfUser01Friends = 4;
 
         List<WebElement> friends = driver.findElements(By.cssSelector("#tableFriends tbody tr"));
-        Assertions.assertEquals(2, friends.size());
+        Assertions.assertEquals(numOfUser01Friends, friends.size());
     }
 
     /**
