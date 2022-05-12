@@ -26,14 +26,14 @@ class SocialNetworkApplicationTests {
 //    static String Geckodriver = "C:\\Users\\Alejandro\\Desktop\\SDI-2022\\software\\software\\geckodriver-v0.27.0-win64\\geckodriver.exe";
 
     // Adrian
-    static String Geckodriver = "C:\\Users\\adria\\OneDrive\\Escritorio\\UNIVERSIDAD\\AÑO 3\\SEMESTRE 2\\Sistemas Distribuidos e Internet\\Laboratorio\\Lab5\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
+    //static String Geckodriver = "C:\\Users\\adria\\OneDrive\\Escritorio\\UNIVERSIDAD\\AÑO 3\\SEMESTRE 2\\Sistemas Distribuidos e Internet\\Laboratorio\\Lab5\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
 
 
     //Sara
     //static String Geckodriver = "D:\\UNI\\3º\\2º cuatri\\SDI\\Lab\\sesion05\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
 
     //Diego
-    //static String Geckodriver = "C:\\Users\\dimar\\Desktop\\sdi\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
+    static String Geckodriver = "C:\\Users\\dimar\\Desktop\\sdi\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
 
     //Ari
 //    static String Geckodriver = "C:\\Users\\UO270119\\Desktop\\IIS (definitiva)\\3º - Tercero\\Segundo cuatri\\Sistemas Distribuidos e Internet\\Lab\\[materiales]\\5. Selenium\\PL-SDI-Sesión5-material\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
@@ -655,20 +655,8 @@ class SocialNetworkApplicationTests {
     @Test
     @Order(24)
     void PR24(){
-        driver.navigate().to("localhost:3000/users/login");
 
-        WebElement usernameField = driver.findElement(By.id("email"));
-        usernameField.click();
-        usernameField.clear();
-        usernameField.sendKeys("prueba1@prueba1.com");
-
-        WebElement passwordField = driver.findElement(By.id("password"));
-        passwordField.click();
-        passwordField.clear();
-        passwordField.sendKeys("prueba1");
-
-        WebElement login = driver.findElement(By.id("login"));
-        login.click();
+        PO_LoginView.login(driver, "prueba1@prueba1.com", "prueba1");
 
         driver.navigate().to("localhost:3000/publications/add");
         WebElement title = driver.findElement(By.id("title"));
@@ -691,20 +679,8 @@ class SocialNetworkApplicationTests {
     @Test
     @Order(25)
     void PR25(){
-        driver.navigate().to("localhost:3000/users/login");
 
-        WebElement usernameField = driver.findElement(By.id("email"));
-        usernameField.click();
-        usernameField.clear();
-        usernameField.sendKeys("prueba1@prueba1.com");
-
-        WebElement passwordField = driver.findElement(By.id("password"));
-        passwordField.click();
-        passwordField.clear();
-        passwordField.sendKeys("prueba1");
-
-        WebElement login = driver.findElement(By.id("login"));
-        login.click();
+        PO_LoginView.login(driver, "prueba1@prueba1.com", "prueba1");
 
         driver.navigate().to("localhost:3000/publications/add");
         WebElement title = driver.findElement(By.id("title"));
@@ -727,20 +703,7 @@ class SocialNetworkApplicationTests {
     @Test
     @Order(25)
     void PR25_2(){
-        driver.navigate().to("localhost:3000/users/login");
-
-        WebElement usernameField = driver.findElement(By.id("email"));
-        usernameField.click();
-        usernameField.clear();
-        usernameField.sendKeys("prueba1@prueba1.com");
-
-        WebElement passwordField = driver.findElement(By.id("password"));
-        passwordField.click();
-        passwordField.clear();
-        passwordField.sendKeys("prueba1");
-
-        WebElement login = driver.findElement(By.id("login"));
-        login.click();
+        PO_LoginView.login(driver, "prueba1@prueba1.com", "prueba1");
 
         driver.navigate().to("localhost:3000/publications/add");
         WebElement title = driver.findElement(By.id("title"));
@@ -763,20 +726,7 @@ class SocialNetworkApplicationTests {
     @Test
     @Order(26)
     void PR26(){
-        driver.navigate().to("localhost:3000/users/login");
-
-        WebElement usernameField = driver.findElement(By.id("email"));
-        usernameField.click();
-        usernameField.clear();
-        usernameField.sendKeys("onepublicationuser@gmail.com");
-
-        WebElement passwordField = driver.findElement(By.id("password"));
-        passwordField.click();
-        passwordField.clear();
-        passwordField.sendKeys("password");
-
-        WebElement login = driver.findElement(By.id("login"));
-        login.click();
+        PO_LoginView.login(driver, "onepublicationuser@gmail.com", "password");
 
         driver.navigate().to("localhost:3000/publications/listown");
 
@@ -787,17 +737,8 @@ class SocialNetworkApplicationTests {
     @Test
     @Order(27)
     void PR27(){
-        driver.navigate().to("localhost:3000/users/login");
 
-        WebElement usernameField = driver.findElement(By.id("email"));
-        usernameField.click();
-        usernameField.clear();
-        usernameField.sendKeys("usuarioAmigo1@gmail.com");
-
-        WebElement passwordField = driver.findElement(By.id("password"));
-        passwordField.click();
-        passwordField.clear();
-        passwordField.sendKeys("password");
+        PO_LoginView.login(driver, "usuarioAmigo1@gmail.com", "password");
 
         driver.navigate().to("localhost:3000/publications/list/usuarioAmigo2@gmail.com");
 
@@ -809,17 +750,7 @@ class SocialNetworkApplicationTests {
     @Test
     @Order(28)
     void PR28(){
-        driver.navigate().to("localhost:3000/users/login");
-
-        WebElement usernameField = driver.findElement(By.id("email"));
-        usernameField.click();
-        usernameField.clear();
-        usernameField.sendKeys("usuarioAmigo1@gmail.com");
-
-        WebElement passwordField = driver.findElement(By.id("password"));
-        passwordField.click();
-        passwordField.clear();
-        passwordField.sendKeys("password");
+        PO_LoginView.login(driver, "usuarioAmigo1@gmail.com", "password");
 
         driver.navigate().to("localhost:3000/publications/list/prueba1@prueba1.com");
 

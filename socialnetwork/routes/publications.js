@@ -16,7 +16,7 @@ module.exports = function (app, publicationsRepository, friendsRepository) {
             author: req.session.user
 
         }
-           // ?message=Wrong email or password&messageType=alert-danger%20
+        // ?message=Wrong email or password&messageType=alert-danger%20
         if(publication.title == null || isBlank(publication.title)){
             res.redirect("/publications/add?message=Title must not be empty&messageType=alert-danger%20");
         }
@@ -45,10 +45,11 @@ module.exports = function (app, publicationsRepository, friendsRepository) {
     app.get('/publications/list/:user', function (req, res) {
         let author = req.params.user;
 
-        let user1 = req.params.user
-        let user2 = req.session.user
+        let user1 = req.session.user
+        let user2 = req.params.user
 
-        let filter = { // Requests sent to or received by our user
+
+        let filter = {
             $or:[
                 {sender: user1, receiver: user2},
                 {sender: user2, receiver: user1}
@@ -58,10 +59,8 @@ module.exports = function (app, publicationsRepository, friendsRepository) {
 
         friendsRepository.getRequests(filter,{}).then(requests =>{
 
-            var i = requests;
-            var i1 = requests;
 
-            if(requests.length != 0) {
+            if(req.params.user == req.session.user || requests.length != 0) {
                 if (req.params.user == req.session.user || requests[0].status == "ACCEPTED") {
                     let filter = {
                         author: author
