@@ -2,12 +2,15 @@ const {ObjectId} = require("mongodb");
 const {request} = require("express");
 
 module.exports = function (app, publicationsRepository, friendsRepository) {
+    let logger = app.get('logger');
 
     app.get('/publications/add', function (req, res) {
+        logger.info("[GET] /publications/add");
         res.render("publications/add.twig", {sessionUser: req.session.user});
     });
 
     app.post('/publications/add', function (req, res) {
+        logger.info("[POST] /publications/add");
 
         let publication = {
             title: req.body.title,
@@ -18,9 +21,11 @@ module.exports = function (app, publicationsRepository, friendsRepository) {
         }
         // ?message=Wrong email or password&messageType=alert-danger%20
         if(publication.title == null || isBlank(publication.title)){
+            logger.error("[POST] /publications/add - Title must not be empty");
             res.redirect("/publications/add?message=Title must not be empty&messageType=alert-danger%20");
         }
         else if ( publication.text == null || isBlank(publication.text)){
+            logger.error("[POST] /publications/add - Content must not be empty");
             res.redirect("/publications/add?message=Content must not be empty&messageType=alert-danger%20");
         }
         else{
@@ -39,10 +44,13 @@ module.exports = function (app, publicationsRepository, friendsRepository) {
     }
 
     app.get("/publications/listown", function (req, res) {
+        logger.info("[GET] /publications/listown");
         res.redirect("/publications/list/" + req.session.user)
     });
 
     app.get('/publications/list/:user', function (req, res) {
+        logger.info("[GET] /publications/list...");
+
         let author = req.params.user;
 
         let user1 = req.session.user
