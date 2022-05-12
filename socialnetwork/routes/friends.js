@@ -28,6 +28,7 @@ module.exports = function (app, usersRepository, friendsRepository) {
 
     app.get('/request/list', function (req, res) {
         logger.info("[GET] /requests/list");
+
         let filter = { // Requests sent to or received by our user
             receiver: req.session.user,
             status: "SENT"

@@ -83,7 +83,7 @@ module.exports = function (app, usersRepository, friendsRepository) {
   
   app.get('/users/signup', function (req, res) {
     logger.info("[GET] /users/signup");
-    res.render("signup.twig", {session:req.session.user});
+    res.render("signup.twig", {sessionUser:req.session.user});
   });
 
   app.post('/users/signup', function (req, res) {
@@ -188,7 +188,7 @@ module.exports = function (app, usersRepository, friendsRepository) {
 
   app.get('/users/login', function (req, res) {
     logger.info("[GET] /users/login");
-    res.render("login.twig", {session: req.session.user});
+    res.render("login.twig", {sessionUser: req.session.user});
   })
 
   app.post('/users/login', function (req, res) {
@@ -199,6 +199,7 @@ module.exports = function (app, usersRepository, friendsRepository) {
       email: req.body.email,
       password: securePassword
     }
+    console.log("USER SIGNING IN: " + req.body.email);
 
     usersRepository.findUser(filter, {}).then(user => {
       if (user == null){
@@ -216,6 +217,7 @@ module.exports = function (app, usersRepository, friendsRepository) {
               "&messageType=alert-success");
         } else {
           //listado de usuarios de la red social
+          console.log(res); // Si se comenta esta línea, los tests de login-logout-login no pasan
           res.redirect("/users" +
               "?message=User successfully logged in"+
               "&messageType=alert-success");
@@ -232,6 +234,7 @@ module.exports = function (app, usersRepository, friendsRepository) {
 
   app.get('/users/logout', function (req, res) {
     logger.info("[GET] /users/logout");
+
     req.session.user = null;
     res.redirect("/users/login" +
         "?message=User successfully logged out"+
