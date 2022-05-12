@@ -12,6 +12,7 @@ module.exports = {
             const collectionName = 'messages';
             const messagesCollection = database.collection(collectionName);
             const result = await messagesCollection.insertOne(message);
+            client.close();
             return result.insertedId;
         } catch (error) {
             throw (error);
