@@ -34,8 +34,8 @@
             url: URLbase + "/messages/conversation",
             type: "POST",
             async: false,
-            data: {userName1: "prueba1@prueba1.com",
-                userName2: "prueba2@prueba2.com"},
+            data: {userName1: user,
+                userName2: Cookies.get('receiver')},
             dataType: 'json',
             headers: {"token": token},
             success: function (response) {

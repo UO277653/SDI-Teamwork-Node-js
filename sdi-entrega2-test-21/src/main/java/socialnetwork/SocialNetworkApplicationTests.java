@@ -861,8 +861,12 @@ class SocialNetworkApplicationTests {
         List<WebElement> result = PO_View.checkElementBy(driver, "id", "widget-friends");
         Assertions.assertNotNull(result.get(0));
 
+        SeleniumUtils.waitLoadElementsBy(driver, "id", "user02@email.com",30);
+        SeleniumUtils.waitLoadElementsBy(driver, "id", "user03@email.com",30);
+        SeleniumUtils.waitLoadElementsBy(driver, "id", "user04@email.com",30);
+
         List<WebElement> friendsList = PO_View.checkElementBy(driver, "free", "//tbody/tr");
-        Assertions.assertEquals(3, friendsList.size());
+        Assertions.assertTrue(friendsList.size() >= 3);
     }
 
     /**
@@ -882,11 +886,69 @@ class SocialNetworkApplicationTests {
 
         //filter
         driver.findElement(By.id("filter-by-name")).click();
-        driver.findElement(By.id("filter-by-name")).sendKeys("Juan Apellido");
-        driver.findElement(By.id("update-btn")).click();
+        driver.findElement(By.id("filter-by-name")).sendKeys("user02");
+        SeleniumUtils.waitLoadElementsBy(driver, "id", "user02@email.com",30);
 
-        List<WebElement> friendsList = PO_View.checkElementBy(driver, "free", "Juan Apellido");
+        List<WebElement> friendsList = driver.findElements(By.id("user02@email.com"));;
+        Assertions.assertEquals(1, friendsList.size());
+    }
+
+    /**
+     * C1. Acceder a la lista de mensajes de un amigo, la lista debe contener al menos tres mensajes.
+     */
+    @Test
+    @Order(36)
+    void PR36(){
+        PO_Api.goToApi(driver);
+        PO_Api.fillLoginForm(driver, "user01@email.com", "user01");
+
+        //redirige a widget-friends
+        List<WebElement> result = PO_View.checkElementBy(driver, "id", "widget-friends");
+        Assertions.assertNotNull(result.get(0));
+
+        SeleniumUtils.waitLoadElementsBy(driver, "id", "user02@email.com",30);
+        SeleniumUtils.waitLoadElementsBy(driver, "id", "message1user02@email.com",30);
+
+        driver.findElement(By.id("message1user02@email.com")).click();
+
+        SeleniumUtils.waitLoadElementsBy(driver, "text", "how are you",30);
+
+        List<WebElement> friendsList = PO_View.checkElementBy(driver, "free", "//tbody/tr");
         Assertions.assertEquals(3, friendsList.size());
+    }
+
+    /**
+     * C1. Acceder a la lista de mensajes de un amigo y crear un nuevo mensaje. Validar que el mensaje
+     *     aparece en la lista de mensajes.
+     */
+    @Test
+    @Order(37)
+    void PR37(){
+        PO_Api.goToApi(driver);
+        PO_Api.fillLoginForm(driver, "user01@email.com", "user01");
+
+        //redirige a widget-friends
+        List<WebElement> result = PO_View.checkElementBy(driver, "id", "widget-friends");
+        Assertions.assertNotNull(result.get(0));
+
+        SeleniumUtils.waitLoadElementsBy(driver, "id", "user02@email.com",30);
+        SeleniumUtils.waitLoadElementsBy(driver, "id", "message1user02@email.com",30);
+
+        driver.findElement(By.id("message1user02@email.com")).click();
+
+        SeleniumUtils.waitLoadElementsBy(driver, "text", "how are you",30);
+
+        int friendsListSize = PO_View.checkElementBy(driver, "free", "//tbody/tr").size();
+
+        driver.findElement(By.id("message")).click();
+
+        driver.findElement(By.id("message")).sendKeys("this is a test message");
+
+        driver.findElement(By.id("boton-add")).click();
+        int newFriendsListSize = PO_View.checkElementBy(driver, "free", "//tbody/tr").size();
+
+
+        Assertions.assertTrue(newFriendsListSize >= friendsListSize);
     }
 
     private int getNumberOfUsers(){
