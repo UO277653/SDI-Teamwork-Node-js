@@ -76,29 +76,4 @@ module.exports = {
         }
     },
 
-
-
-
-
-    areFriends: async function (userEmailA, userEmailB, callback) {
-        await this.findRequestBetweenUsers(userEmailA, userEmailB, req => {
-            if (req == null)
-                callback(false);
-            else callback(req.status === "ACCEPTED");
-        });
-    },
-
-    findRequestBetweenUsers: async function(userEmailA, userEmailB, callback) {
-        let filter = { // Requests sent to or received by our user
-            $or:[
-                {sender: userEmailA, receiver: userEmailB},
-                {sender: userEmailB, receiver: userEmailA},
-            ]
-        }
-        this.findRequest(filter, {}).then(async request => {
-            callback(request);
-        }).catch(error => {
-            callback(null);
-        });
-    },
 };

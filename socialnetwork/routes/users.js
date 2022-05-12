@@ -8,19 +8,25 @@ module.exports = function (app, usersRepository, friendsRepository) {
   // we will create a collection of tuples that
   // contain the given user and the possible
   // friend request involving the logged user.
-  function _usersListGenerateTuples(sessionUser, usersList, index, tupleCallback, onComplete) {
-    if (index >= usersList.length) {
-      onComplete();
-      return;
-    }
-    let otherUser = usersList[index];
+  function _usersListGenerateTuples(sessionUser, usersList, tupleCallback, onComplete) {
 
-    friendsRepository.findRequestBetweenUsers(sessionUser, otherUser.email, friendReq => {
-      tupleCallback({
-        user: otherUser,
-        friendRequest: friendReq
-      });
-      _usersListGenerateTuples(sessionUser, usersList, index+1, tupleCallback, onComplete);
+    let promises = [];
+    for (let i = 0; i < usersList.length; i++) {
+      let otherUser = usersList[i];
+      let filter = { // Requests sent to or received by our user
+        $or:[
+          {sender: sessionUser, receiver: otherUser.email},
+          {sender: otherUser.email, receiver: sessionUser},
+        ]
+      };
+      promises[i] = friendsRepository.findRequest(filter, {});
+    }
+
+    Promise.all(promises).then(requests => {
+      for (let i = 0; i < usersList.length; i++) {
+        tupleCallback({ user: usersList[i], friendRequest: requests[i]});
+      }
+      onComplete();
     });
   }
 
@@ -63,7 +69,7 @@ module.exports = function (app, usersRepository, friendsRepository) {
       let tupleCallback = (tuple) => {
         listedUsers.push(tuple);
       };
-      _usersListGenerateTuples(req.session.user, result.users, 0, tupleCallback, () => {
+      _usersListGenerateTuples(req.session.user, result.users, tupleCallback, () => {
 
         let response = {
           listedUsers: listedUsers,
@@ -217,7 +223,7 @@ module.exports = function (app, usersRepository, friendsRepository) {
               "&messageType=alert-success");
         } else {
           //listado de usuarios de la red social
-          console.log(res); // Si se comenta esta línea, los tests de login-logout-login no pasan
+          //console.log(res); // Si se comenta esta línea, los tests de login-logout-login no pasan
           res.redirect("/users" +
               "?message=User successfully logged in"+
               "&messageType=alert-success");

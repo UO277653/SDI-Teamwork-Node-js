@@ -7,23 +7,21 @@ module.exports = function (app, usersRepository, friendsRepository) {
     // we will create a collection of tuples that
     // contain the actual friend request and the
     // other user involved.
-    function _friendsListGenerateTuples(sessionUser, friendRequests, index, tupleCallback, onComplete) {
-        if (index >= friendRequests.length) {
-            onComplete();
-            return;
-        }
-        let friendReq = friendRequests[index];
-        let filter = {email: friendReq.sender};
+    function _friendsListGenerateTuples(sessionUser, friendRequests, tupleCallback, onComplete) {
 
-        usersRepository.findUser(filter, {}).then(otherUser => {
-            tupleCallback({
-                request: friendReq,
-                otherUser: otherUser
-            });
-            _friendsListGenerateTuples(sessionUser, friendRequests, index+1, tupleCallback, onComplete);
-        }).catch(error => {
-            _friendsListGenerateTuples(sessionUser, friendRequests, index+1, tupleCallback, onComplete);
-        })
+        let promises = [];
+        for (let i = 0; i < friendRequests.length; i++) {
+            let friendReq = friendRequests[i];
+            let filter = {email: friendReq.sender};
+            promises[i] = usersRepository.findUser(filter, {});
+        }
+
+        Promise.all(promises).then(users => {
+            for (let i = 0; i < friendRequests.length; i++) {
+                tupleCallback({ request: friendRequests[i], otherUser: users[i]});
+            }
+            onComplete();
+        });
     }
 
     app.get('/request/list', function (req, res) {
@@ -43,7 +41,7 @@ module.exports = function (app, usersRepository, friendsRepository) {
             let tupleCallback = (tuple) => {
                 tuples.push(tuple);
             };
-            _friendsListGenerateTuples(req.session.user, requests, 0, tupleCallback, () => {
+            _friendsListGenerateTuples(req.session.user, requests, tupleCallback, () => {
                 res.render("user/friendRequests.twig", {possibleFriends: tuples, sessionUser: req.session.user });
             });
 

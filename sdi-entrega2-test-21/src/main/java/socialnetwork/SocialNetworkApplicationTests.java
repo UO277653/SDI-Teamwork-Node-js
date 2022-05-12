@@ -598,7 +598,7 @@ class SocialNetworkApplicationTests {
         requests += PO_RequestListView.countRequestsOnPage(driver, 0);
 
         // check that user08's invite is there (and accept it or not), we'll do it by checking if the email of user08 is on page
-        SeleniumUtils.waitLoadElementsBy(driver, "text", "user08@email.com", 10);
+        SeleniumUtils.waitLoadElementsBy(driver, "text", "user08@email.com", 100);
         SeleniumUtils.textIsPresentOnPage(driver, "user08@email.com");
         SeleniumUtils.textIsPresentOnPage(driver, "user07@email.com");
 
@@ -647,7 +647,7 @@ class SocialNetworkApplicationTests {
         requests += PO_RequestListView.countRequestsOnPage(driver, 0);
 
         // check that user08's invite is there (and accept it or not), we'll do it by checking if the email of user08 is on page
-        SeleniumUtils.waitLoadElementsBy(driver, "text", "user08@email.com", 10);
+        SeleniumUtils.waitLoadElementsBy(driver, "text", "user08@email.com", 100);
         SeleniumUtils.textIsPresentOnPage(driver, "user08@email.com");
 
         // Assert counting the requests on the page
