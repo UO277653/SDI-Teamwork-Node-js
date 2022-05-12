@@ -46,11 +46,18 @@
         });
     }
 
-    // Variable for storing the last message
+    // Variables for storing the last message and authors
     let lastMessage;
+    let sender;
+    let receiver;
+
+    let i;
+
+    let array = [];
 
     // Appending the friends to the table
     function updateFriendsTable(friends) {
+
 
         $("#friendsTableBody").empty(); // Vaciar la tabla
         for (i = 0; i < friends.length; i++) {
@@ -68,8 +75,8 @@
                 url: URLbase + "/messages/conversation",
                 type: "POST",
                 async: false,
-                data: {userName1: "prueba1@prueba1.com",
-                    userName2: "prueba2@prueba2.com"},
+                data: {userName1: user,
+                    userName2: friends[i].email},
                 dataType: 'json',
                 headers: {"token": token},
                 success: function (response) {
@@ -77,10 +84,25 @@
                     if(response.result.isEmpty) {
                         lastMessage = "";
                     } else {
+
                         lastMessage = response.result[0];
 
-                        $("#friendsTableBody").append(
-                            "<td><a onclick=chat(lastMessage)>" + lastMessage.date + " " + lastMessage.text + "</a></td>");
+                        array.push(response.result[0]);
+
+                        sender = lastMessage.sender.toString();
+                        receiver = lastMessage.receiver.toString();
+
+                        let senderString = lastMessage.sender.toString();
+                        let receiverString =lastMessage.receiver.toString();
+                        let id = lastMessage.text.toString() + friends[i].email.toString();
+
+                        let newLastMessage = document.createElement("a");
+
+                        newLastMessage.id = id;
+                        newLastMessage.innerHTML =  lastMessage.date + " " + lastMessage.text;
+                        newLastMessage.addEventListener("click", function() {chat(senderString, receiverString);}, false);
+
+                        $("#friendsTableBody").append(newLastMessage);
                     }
                 },
                 error: function (error) {
@@ -91,15 +113,15 @@
     }
 
     // This function stores both emails in order to use them afterwards in the chat and loads the chat widget
-    function chat(message){
+    function chat(sender, receiver){
 
-        if(user == message.sender){
-            Cookies.set('receiver', message.receiver);
+        if(user == sender){
+            Cookies.set('receiver', receiver);
         } else {
-            Cookies.set('receiver', message.sender);
+            Cookies.set('receiver', sender);
         }
-        Cookies.set('email1', message.sender)
-        Cookies.set('email2', message.receiver)
+        Cookies.set('email1', sender)
+        Cookies.set('email2', receiver)
 
         $("#main-container").load("widget-chat.html");
     }

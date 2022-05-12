@@ -12,7 +12,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.bson.Document;
-import org.bson.types.ObjectId;
 import socialnetwork.util.*;
 
 import java.util.List;
@@ -25,10 +24,11 @@ class SocialNetworkApplicationTests {
     static String PathFirefox = "C:\\Program Files\\Mozilla Firefox\\firefox.exe";
 
     // Jonas
-//    static String Geckodriver = "C:\\Users\\Alejandro\\Desktop\\SDI-2022\\software\\software\\geckodriver-v0.27.0-win64\\geckodriver.exe";
+    static String Geckodriver = "C:\\Users\\Alejandro\\Desktop\\SDI-2022\\software\\software\\geckodriver-v0.27.0-win64\\geckodriver.exe";
 
     // Adrian
-    //static String Geckodriver = "C:\\Users\\adria\\OneDrive\\Escritorio\\UNIVERSIDAD\\AÑO 3\\SEMESTRE 2\\Sistemas Distribuidos e Internet\\Laboratorio\\Lab5\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
+//    static String Geckodriver = "C:\\Users\\adria\\OneDrive\\Escritorio\\UNIVERSIDAD\\AÑO 3\\SEMESTRE 2\\Sistemas Distribuidos e Internet\\Laboratorio\\Lab5\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
+
 
 
     //Sara
@@ -411,6 +411,8 @@ class SocialNetworkApplicationTests {
         elementos += PO_UserListView.countUsersOnPage(driver, 2);
         elementos += PO_UserListView.countUsersOnPage(driver, 3);
         elementos += PO_UserListView.countUsersOnPage(driver, 4);
+        elementos += PO_UserListView.countUsersOnPage(driver, 5);
+        elementos += PO_UserListView.countUsersOnPage(driver, 6);
 
         // all users but the deleted ones and the admin and logged in users
         Assertions.assertEquals(getNumberOfUsers() - (1 + numOfAdmins), elementos);
@@ -658,10 +660,13 @@ class SocialNetworkApplicationTests {
     @Order(23)
     void PR23() {
         PO_LoginView.login(driver, "user01@email.com", "user01");
-        driver.findElement(By.id("friendList")).click();
+        driver.findElement(By.id("dropdownFriends")).click();
+        driver.findElement(By.id("listFriendsOption")).click();
+
+        final int numOfUser01Friends = 4;
 
         List<WebElement> friends = driver.findElements(By.cssSelector("#tableFriends tbody tr"));
-        Assertions.assertEquals(2, friends.size());
+        Assertions.assertEquals(numOfUser01Friends, friends.size());
     }
 
     /**
@@ -882,8 +887,12 @@ class SocialNetworkApplicationTests {
         List<WebElement> result = PO_View.checkElementBy(driver, "id", "widget-friends");
         Assertions.assertNotNull(result.get(0));
 
+        SeleniumUtils.waitLoadElementsBy(driver, "id", "user02@email.com",30);
+        SeleniumUtils.waitLoadElementsBy(driver, "id", "user03@email.com",30);
+        SeleniumUtils.waitLoadElementsBy(driver, "id", "user04@email.com",30);
+
         List<WebElement> friendsList = PO_View.checkElementBy(driver, "free", "//tbody/tr");
-        Assertions.assertEquals(3, friendsList.size());
+        Assertions.assertTrue(friendsList.size() >= 3);
     }
 
     /**
@@ -903,11 +912,73 @@ class SocialNetworkApplicationTests {
 
         //filter
         driver.findElement(By.id("filter-by-name")).click();
-        driver.findElement(By.id("filter-by-name")).sendKeys("Juan Apellido");
-        driver.findElement(By.id("update-btn")).click();
+        driver.findElement(By.id("filter-by-name")).sendKeys("user02");
+        SeleniumUtils.waitLoadElementsBy(driver, "id", "user02@email.com",30);
 
-        List<WebElement> friendsList = PO_View.checkElementBy(driver, "free", "Juan Apellido");
-        Assertions.assertEquals(3, friendsList.size());
+        List<WebElement> friendsList = driver.findElements(By.id("user02@email.com"));;
+        Assertions.assertEquals(1, friendsList.size());
+    }
+
+    /**
+     * C1. Acceder a la lista de mensajes de un amigo, la lista debe contener al menos tres mensajes.
+     */
+    @Test
+    @Order(36)
+    void PR36(){
+
+        // IN DEBUG IT WORKS
+        PO_Api.goToApi(driver);
+        PO_Api.fillLoginForm(driver, "user01@email.com", "user01");
+
+        //redirige a widget-friends
+        List<WebElement> result = PO_View.checkElementBy(driver, "id", "widget-friends");
+        Assertions.assertNotNull(result.get(0));
+
+        SeleniumUtils.waitLoadElementsBy(driver, "id", "user02@email.com",30);
+        SeleniumUtils.waitLoadElementsBy(driver, "id", "message1user02@email.com",30);
+
+        driver.findElement(By.id("message1user02@email.com")).click();
+
+        SeleniumUtils.waitLoadElementsBy(driver, "text", "how are you",30);
+
+        List<WebElement> friendsList = PO_View.checkElementBy(driver, "free", "//tbody/tr");
+        Assertions.assertTrue(friendsList.size() >= 3);
+    }
+
+    /**
+     * C1. Acceder a la lista de mensajes de un amigo y crear un nuevo mensaje. Validar que el mensaje
+     *     aparece en la lista de mensajes.
+     */
+    @Test
+    @Order(37)
+    void PR37(){
+
+        // IN DEBUG IT WORKS
+        PO_Api.goToApi(driver);
+        PO_Api.fillLoginForm(driver, "user01@email.com", "user01");
+
+        //redirige a widget-friends
+        List<WebElement> result = PO_View.checkElementBy(driver, "id", "widget-friends");
+        Assertions.assertNotNull(result.get(0));
+
+        SeleniumUtils.waitLoadElementsBy(driver, "id", "user02@email.com",30);
+        List<WebElement> elements = SeleniumUtils.waitLoadElementsBy(driver, "id", "message1user02@email.com",30);
+
+        elements.get(0).click();
+
+        SeleniumUtils.waitLoadElementsBy(driver, "text", "how are you",30);
+
+        int friendsListSize = PO_View.checkElementBy(driver, "free", "//tbody/tr").size();
+
+        driver.findElement(By.id("message")).click();
+
+        driver.findElement(By.id("message")).sendKeys("this is a test message");
+
+        driver.findElement(By.id("boton-add")).click();
+        int newFriendsListSize = PO_View.checkElementBy(driver, "free", "//tbody/tr").size();
+
+
+        Assertions.assertTrue(newFriendsListSize >= friendsListSize);
     }
 
     private int getNumberOfUsers(){
@@ -942,6 +1013,7 @@ class SocialNetworkApplicationTests {
                     .append("surname", surname)
                     .append("password", "test")
                     .append("role", role));
+            mongoClient.close();
         } catch (MongoException me) {
             System.err.println("Unable to insert due to an error: " + me);
         }

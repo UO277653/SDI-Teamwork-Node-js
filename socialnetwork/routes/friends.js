@@ -127,7 +127,7 @@ module.exports = function (app, usersRepository, friendsRepository) {
         })
     });
 
-    app.get("/friends", function(req, res) {
+    app.get("/friends/list", function(req, res) {
        let options = {};
        let filter = {
            $or:[

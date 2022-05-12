@@ -42,11 +42,8 @@ module.exports = function (app, messagesRepository, usersRepository, friendsRepo
 
     app.post("/api/v1.0/messages/conversation", function(req, res){
         try {
-            //let userName1 = req.body.userName1;
-            //let userName2 = req.body.userName2;
-
-            let userName1 = "prueba1@prueba1.com";
-            let userName2 = "prueba2@prueba2.com";
+            let userName1 = req.body.userName1;
+            let userName2 = req.body.userName2;
 
             let filter = {
                 sender: {"$in": [userName1 , userName2]},
@@ -76,11 +73,8 @@ module.exports = function (app, messagesRepository, usersRepository, friendsRepo
 
     app.put("/api/v1.0/messages/setAsRead/:id", function(req, res){
         try {
-            //let userName1;
-            //let id = req.params.id;
-
-            let userName1 = "prueba1@prueba1.com";
-            let id = "6279287bebaa0e07720075b4";
+            let userName1 = req.body.user;
+            let id = req.params.id;
 
             let filter = {
                 sender: userName1,
@@ -117,6 +111,7 @@ module.exports = function (app, messagesRepository, usersRepository, friendsRepo
     });
 
     app.get("/api/v1.0/friends/list", function(req, res) {
+
         let options = {projection: {_id: 0, password: 0}}
         let filter = {
             $or:[
@@ -128,8 +123,9 @@ module.exports = function (app, messagesRepository, usersRepository, friendsRepo
 
         friendsRepository.getRequests(filter, options).then(requests => {
             let friendEmails = [];
+
             requests.forEach(request => {
-                if(request.sender == req.session.user)
+                if(request.sender == req.query.user)
                     friendEmails.push(request.receiver);
                 else
                     friendEmails.push(request.sender);

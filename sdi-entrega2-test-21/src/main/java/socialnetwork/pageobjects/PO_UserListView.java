@@ -23,7 +23,8 @@ public class PO_UserListView {
     }
 
     public static void delete(WebDriver driver) {
-        List<WebElement> removeButton = driver.findElements(By.id("deleteBtn"));
+        List<WebElement> removeButton = PO_View.checkElementBy(driver, "id", "deleteBtn");
+//        driver.findElements(By.id("deleteBtn"));
         removeButton.get(0).click();
     }
 

@@ -81,7 +81,7 @@ module.exports = function (app, usersRepository, friendsRepository) {
   
   app.get('/users/signup', function (req, res) {
     console.log("Access to signup form")
-    res.render("signup.twig", {session:null});
+    res.render("signup.twig", {session:req.session.user});
   });
 
   app.post('/users/signup', function (req, res) {
