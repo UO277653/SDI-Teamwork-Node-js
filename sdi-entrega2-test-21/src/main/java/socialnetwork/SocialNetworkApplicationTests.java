@@ -11,7 +11,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.bson.Document;
 import org.bson.types.ObjectId;
-import socialnetwork.util.SeleniumUtils;
+import socialnetwork.util.*;
 
 import java.util.List;
 
@@ -26,11 +26,11 @@ class SocialNetworkApplicationTests {
 //    static String Geckodriver = "C:\\Users\\Alejandro\\Desktop\\SDI-2022\\software\\software\\geckodriver-v0.27.0-win64\\geckodriver.exe";
 
     // Adrian
-//    static String Geckodriver = "C:\\Users\\adria\\OneDrive\\Escritorio\\UNIVERSIDAD\\AÑO 3\\SEMESTRE 2\\Sistemas Distribuidos e Internet\\Laboratorio\\Lab5\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
+    static String Geckodriver = "C:\\Users\\adria\\OneDrive\\Escritorio\\UNIVERSIDAD\\AÑO 3\\SEMESTRE 2\\Sistemas Distribuidos e Internet\\Laboratorio\\Lab5\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
 
 
     //Sara
-    static String Geckodriver = "D:\\UNI\\3º\\2º cuatri\\SDI\\Lab\\sesion05\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
+    //static String Geckodriver = "D:\\UNI\\3º\\2º cuatri\\SDI\\Lab\\sesion05\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
 
     //Diego
     //static String Geckodriver = "C:\\Users\\dimar\\Desktop\\sdi\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
@@ -393,49 +393,7 @@ class SocialNetworkApplicationTests {
 
     }
 
-    /**
-     * W10. Aceptar una invitación recibida
-     * Sobre el listado de invitaciones recibidas. Hacer clic en el botón/enlace de una de ellas y comprobar
-     * que dicha solicitud desaparece del listado de invitaciones.
-     */
-    @Test
-    @Order(22)
-    void PR22() {
 
-        //borrar friendship previa o utilizar otros usuarios
-
-        // log as userX
-        PO_LoginView.login(driver, "hola@sara.es", "hola");
-
-        // either go to a list of users, or to the id of a specified user
-        driver.navigate().to("http://localhost:3000/users/user/6279adc8060673b3938c7125");
-
-        // press send button (userY)
-        List<WebElement> sendButton = driver.findElements(By.id("sendBtn"));
-        sendButton.get(0).click();
-
-        // logout userX (igual es x url)
-        driver.navigate().to("localhost:3000/users/logout");
-        //PO_LoginView.logout(driver);
-
-        // log as userY
-        PO_LoginView.login(driver, "hola@sara.com", "hola");
-
-        // go to http://localhost:3000/friends/list
-        driver.navigate().to("http://localhost:3000/friends/list");
-
-        int requests = 0;
-        requests += PO_RequestListView.countRequestsOnPage(driver, 0);
-
-        // check that userX's invite is there (and accept it or not), we'll do it by checking if the email of userX is on page
-        SeleniumUtils.textIsPresentOnPage(driver, "hola@sara.es");
-        List<WebElement> acceptButton = driver.findElements(By.id("acceptBtn"));
-        acceptButton.get(0).click();
-
-        // we could do an assert counting the requests on the page
-        Assertions.assertEquals(1, requests);
-
-    }
 
 
     /**
@@ -447,7 +405,7 @@ class SocialNetworkApplicationTests {
     void PR12() {
 
         // Login as admin
-        driver.findElement(By.id("login")).click();
+        driver.findElement(By.id("login-btn")).click();
         PO_LoginView.fillLoginForm(driver, "admin@email.com", "admin");
 
         // Add test user to the bottom
@@ -475,7 +433,7 @@ class SocialNetworkApplicationTests {
     @Order(13)
     void PR13() {
         // Login as admin
-        driver.findElement(By.id("login")).click();
+        driver.findElement(By.id("login-btn")).click();
         PO_LoginView.fillLoginForm(driver, "admin@email.com", "admin");
 
         // Add test user to the bottom
@@ -503,7 +461,7 @@ class SocialNetworkApplicationTests {
     @Order(14)
     void PR14() {
         // Login as admin
-        driver.findElement(By.id("login")).click();
+        driver.findElement(By.id("login-btn")).click();
         PO_LoginView.fillLoginForm(driver, "admin@email.com", "admin");
 
         // Add test users to the bottom
@@ -633,6 +591,50 @@ class SocialNetworkApplicationTests {
         }
 
         return size;
+    }
+
+    /**
+     * W10. Aceptar una invitación recibida
+     * Sobre el listado de invitaciones recibidas. Hacer clic en el botón/enlace de una de ellas y comprobar
+     * que dicha solicitud desaparece del listado de invitaciones.
+     */
+    @Test
+    @Order(22)
+    void PR22() {
+
+        //borrar friendship previa o utilizar otros usuarios
+
+        // log as userX
+        PO_LoginView.login(driver, "hola@sara.es", "hola");
+
+        // either go to a list of users, or to the id of a specified user
+        driver.navigate().to("http://localhost:3000/users/user/6279adc8060673b3938c7125");
+
+        // press send button (userY)
+        List<WebElement> sendButton = driver.findElements(By.id("sendBtn"));
+        sendButton.get(0).click();
+
+        // logout userX (igual es x url)
+        driver.navigate().to("localhost:3000/users/logout");
+        //PO_LoginView.logout(driver);
+
+        // log as userY
+        PO_LoginView.login(driver, "hola@sara.com", "hola");
+
+        // go to http://localhost:3000/friends/list
+        driver.navigate().to("http://localhost:3000/friends/list");
+
+        int requests = 0;
+        requests += PO_RequestListView.countRequestsOnPage(driver, 0);
+
+        // check that userX's invite is there (and accept it or not), we'll do it by checking if the email of userX is on page
+        SeleniumUtils.textIsPresentOnPage(driver, "hola@sara.es");
+        List<WebElement> acceptButton = driver.findElements(By.id("acceptBtn"));
+        acceptButton.get(0).click();
+
+        // we could do an assert counting the requests on the page
+        Assertions.assertEquals(1, requests);
+
     }
 
     /**
@@ -823,6 +825,47 @@ class SocialNetworkApplicationTests {
 
         Assertions.assertTrue(driver.getPageSource().contains("No tienes permiso para ver las publicaciones de este usuario"));
 
+    }
+
+    /*
+        Intentar acceder sin estar autenticado a la opción de listado de usuarios. Se deberá volver al
+        formulario de login.
+     */
+    @Test
+    @Order(29)
+    void PR29() {
+
+        // Go to the user page
+        driver.navigate().to("localhost:3000/users");
+
+        // Make sure that we have been redirected to the login page
+        Assertions.assertEquals(driver.getCurrentUrl(), "http://localhost:3000/users/login");
+    }
+
+    /*
+        Intentar acceder sin estar autenticado a la opción de listado de invitaciones de amistad recibida
+        de un usuario estándar. Se deberá volver al formulario de login.
+     */
+    @Test
+    @Order(30)
+    void PR30() {
+
+        // Go to the friends list page
+        driver.navigate().to("localhost:3000/friends/list");
+
+        // Make sure that we have been redirected to the login page
+        Assertions.assertEquals(driver.getCurrentUrl(), "http://localhost:3000/users/login");
+    }
+
+    /*
+        Intentar acceder estando autenticado como usuario standard a la lista de amigos de otro
+        usuario. Se deberá mostrar un mensaje de acción indebida.
+     */
+    @Test
+    @Order(31)
+    void PR31() {
+
+        // A user cannot access the friends list of another, as the user in the session is used
     }
 
 }
