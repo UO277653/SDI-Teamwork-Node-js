@@ -2,7 +2,7 @@ const express = require('express');
 const userSessionRouter = express.Router();
 userSessionRouter.use(function(req, res, next) {
     console.log("routerUsuarioSession");
-    if ( req.session.user ) {
+    if ( req.session.user || req.originalUrl.includes("/users/login") || req.originalUrl.includes("/users/signup") ) {
         // dejamos correr la petición
         next();
     } else {
