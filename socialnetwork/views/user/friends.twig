@@ -1,14 +1,15 @@
 {% extends "layout.twig" %}
-{% block title %} Amigos – Social Network {% endblock %}
+{% block title %} Friends – Social Network {% endblock %}
 {% block main_container %}
-    <h2>Amigos</h2>
+    <h2>Friends</h2>
     <div class="table-responsive">
         <table class="table table-hover" id="tableFriends">
             <thead>
             <tr>
                 <th scope="col">Email</th>
-                <th scope="col">Nombre</th>
-                <th scope="col">Apellidos</th>
+                <th scope="col">Name</th>
+                <th scope="col">Surname</th>
+                <th scope="col">Publications</th>
             </tr>
             </thead>
             <tbody>
@@ -17,6 +18,7 @@
                     <td>{{ friend.email }}</td>
                     <td>{{ friend.name }}</td>
                     <td>{{ friend.surname }}</td>
+                    <td><a href="/publications/list/{{ friend.email }}">List of publications</a></td>
                 </tr>
             {% endfor %}
             </tbody>
@@ -27,7 +29,7 @@
         <ul class="pagination">
             {% for page in pages %}
                 <li class="page-item" id="id-{{ page }}">
-                    <a class="page-link" href="/friends/?page={{ page }}">{{ page }}</a>
+                    <a class="page-link" href="/friends/list/?page={{ page }}">{{ page }}</a>
                 </li>
             {% endfor %}
             <script>

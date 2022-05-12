@@ -4,7 +4,7 @@ const {request} = require("express");
 module.exports = function (app, publicationsRepository, friendsRepository) {
 
     app.get('/publications/add', function (req, res) {
-        res.render("publications/add.twig");
+        res.render("publications/add.twig", {sessionUser: req.session.user});
     });
 
     app.post('/publications/add', function (req, res) {
@@ -16,7 +16,7 @@ module.exports = function (app, publicationsRepository, friendsRepository) {
             author: req.session.user
 
         }
-           // ?message=Wrong email or password&messageType=alert-danger%20
+        // ?message=Wrong email or password&messageType=alert-danger%20
         if(publication.title == null || isBlank(publication.title)){
             res.redirect("/publications/add?message=Title must not be empty&messageType=alert-danger%20");
         }
@@ -26,9 +26,9 @@ module.exports = function (app, publicationsRepository, friendsRepository) {
         else{
 
             publicationsRepository.insertPublication(publication).then(publicationId =>{
-                res.send("La publicación ha sido añadida");
+                res.send("The publication has been added");
             }).catch(error => {
-                res.send("Error al insertar la publicación");
+                res.send("Error at inserting publication");
             })
         }
 
@@ -45,10 +45,11 @@ module.exports = function (app, publicationsRepository, friendsRepository) {
     app.get('/publications/list/:user', function (req, res) {
         let author = req.params.user;
 
-        let user1 = req.params.user
-        let user2 = req.session.user
+        let user1 = req.session.user
+        let user2 = req.params.user
 
-        let filter = { // Requests sent to or received by our user
+
+        let filter = {
             $or:[
                 {sender: user1, receiver: user2},
                 {sender: user2, receiver: user1}
@@ -58,10 +59,8 @@ module.exports = function (app, publicationsRepository, friendsRepository) {
 
         friendsRepository.getRequests(filter,{}).then(requests =>{
 
-            var i = requests;
-            var i1 = requests;
 
-            if(requests.length != 0) {
+            if(req.params.user == req.session.user || requests.length != 0) {
                 if (req.params.user == req.session.user || requests[0].status == "ACCEPTED") {
                     let filter = {
                         author: author
@@ -89,7 +88,8 @@ module.exports = function (app, publicationsRepository, friendsRepository) {
                             publications: result.publications,
                             pages: pages,
                             currentPage: page,
-                            author: author
+                            author: author,
+                            sessionUser: req.session.user
                         }
                         res.render("publications/list.twig", response);
                     }).catch(error => {
@@ -97,11 +97,11 @@ module.exports = function (app, publicationsRepository, friendsRepository) {
                     });
 
                 } else {
-                    res.send("No tienes permiso para ver las publicaciones de este usuario");
+                    res.send("You dont have permission to see the publications of this user");
                 }
             }
             else{
-                res.send("No tienes permiso para ver las publicaciones de este usuario");
+                res.send("You dont have permission to see the publications of this user");
             }
         });
 

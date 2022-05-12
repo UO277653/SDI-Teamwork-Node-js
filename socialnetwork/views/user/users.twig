@@ -1,5 +1,5 @@
 {% extends "layout.twig" %}
-{% block title %} Usuarios – Social Network {% endblock %}
+{% block title %} Users – Social Network {% endblock %}
 {% block main_container %}
     <!-- Búsqueda -->
     <div class="row">
@@ -7,7 +7,7 @@
             <form method="get" action="/users">
                 <div class="input-group col-xs-8 col-sm-6 col-md-4 col-lg-5 pull-right">
                     <input id="search" type="text" class="search-query form-control"
-                           placeholder="Buscar usuario" name="search"/>
+                           placeholder="Search user" name="search"/>
                     <span class="input-group-btn">
                         <button class="btn" type="submit" id="searchButton">
                          <span class="glyphicon glyphicon-search"></span>
@@ -17,22 +17,43 @@
             </form>
         </div>
     </div>
-    <h2>Usuarios</h2>
+    <h2>Users</h2>
     <div class="table-responsive">
         <table class="table table-hover" id="tableUsers">
             <thead>
             <tr>
                 <th scope="col">Email</th>
-                <th scope="col">Nombre</th>
-                <th scope="col">Apellidos</th>
+                <th scope="col">Name</th>
+                <th scope="col">Surname</th>
+                <th scope="col">Friends</th>
             </tr>
             </thead>
             <tbody>
-            {% for user in users %}
+            {% for listedUser in listedUsers %}
                 <tr>
-                    <td>{{ user.email }}</td>
-                    <td>{{ user.name }}</td>
-                    <td>{{ user.surname }}</td>
+                    <td>{{ listedUser.user.email }}</td>
+                    <td>{{ listedUser.user.name }}</td>
+                    <td>{{ listedUser.user.surname }}</td>
+                    <td>
+                        {% if listedUser.friendRequest == null %}
+                            <form class="form-horizontal" method="post" action="/friends/request/{{ listedUser.user._id }}" >
+                                <div class="form-group">
+                                    <div class="col-sm-offset-2 col-sm-10">
+                                        <button type="submit" class="btn btn-primary" id="addFriendBtn">+ Add Friend</button>
+                                    </div>
+                                </div>
+                            </form>
+                        {% else %}
+                        <div class="col-sm-offset-2 col-sm-10">
+                            {% if listedUser.friendRequest.status == "SENT" %}
+                                <button type="submit" class="btn btn-primary" disabled>Pending...</button>
+                            {% else %}
+                                <button type="submit" class="btn btn-primary" disabled>Friends!</button>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </td>
+
                 </tr>
             {% endfor %}
             </tbody>

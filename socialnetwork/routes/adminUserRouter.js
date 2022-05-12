@@ -6,7 +6,7 @@ const adminUserRouter = express.Router();
  * through the use of a router
  */
 adminUserRouter.use(function(req, res, next) {
-    console.log("routerUsuarioSession");
+    console.log("routerAdminSession");
     if ( req.session.user == "admin@email.com" ) { // Check if user is admin
         next();
     } else {

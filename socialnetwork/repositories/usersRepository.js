@@ -48,7 +48,7 @@ module.exports = {
             const collectionName = 'users';
             const usersCollection = database.collection(collectionName);
             const users = usersCollection.find(filter, options).toArray();
-            console.log(users);
+            // console.log(users);
             return users;
         } catch(error) {
             throw(error);

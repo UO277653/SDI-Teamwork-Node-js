@@ -1,4 +1,5 @@
 <html lang="en">
+<!-- Informacion sobre la página -->
 <head>
     <title>jQuery Social Network </title>
     <meta charset="utf-8"/>
@@ -22,23 +23,19 @@
             </button>
             <img src="/images/logo.png" alt="logo"/>
         </div>
-        <div class="collapse navbar-collapse" id="myNavbar">
-            <ul class="nav navbar-nav" id="barra-menu">
-                <li><a onclick=widgetFriends()>Friends</a></li>
-            </ul>
-            <ul class="nav navbar-nav navbar-right" id="barra-menu-derecha">
-                <!-- Opciones de menú aqui -->
-            </ul>
-        </div>
     </div>
 </nav>
 <!-- Contenido -->
 <div class="container" id="main-container"> <!-- id para identificar -->
 </div>
 <script>
+
+    // We declare the authentication token
     let token;
     let user;
     let URLbase = "http://localhost:3000/api/v1.0";
+
+    // We load the login widget
     $("#main-container").load("widget-login.html");
 </script>
 </body>

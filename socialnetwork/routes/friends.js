@@ -13,16 +13,12 @@ module.exports = function (app, usersRepository, friendsRepository) {
             return;
         }
         let friendReq = friendRequests[index];
-        let otherUserEmail = (friendReq.sender === sessionUser)
-            ? friendReq.receiver
-            : friendReq.sender;
-        let filter = {email: otherUserEmail};
+        let filter = {email: friendReq.sender};
 
         usersRepository.findUser(filter, {}).then(otherUser => {
             tupleCallback({
                 request: friendReq,
-                otherUser: otherUser,
-                isForCurrentUser: (friendReq.receiver === sessionUser)
+                otherUser: otherUser
             });
             _friendsListGenerateTuples(sessionUser, friendRequests, index+1, tupleCallback, onComplete);
         }).catch(error => {
@@ -30,13 +26,11 @@ module.exports = function (app, usersRepository, friendsRepository) {
         })
     }
 
-    app.get('/friends/list', function (req, res) {
+    app.get('/request/list', function (req, res) {
 
         let filter = { // Requests sent to or received by our user
-            $or:[
-                {sender: req.session.user},
-                {receiver: req.session.user},
-            ]
+            receiver: req.session.user,
+            status: "SENT"
         }
         friendsRepository.getRequests(filter, {}).then(async requests => {
             if (requests == null) {
@@ -49,8 +43,7 @@ module.exports = function (app, usersRepository, friendsRepository) {
                 tuples.push(tuple);
             };
             _friendsListGenerateTuples(req.session.user, requests, 0, tupleCallback, () => {
-
-                res.render("user/friendRequests.twig", {possibleFriends: tuples});
+                res.render("user/friendRequests.twig", {possibleFriends: tuples, sessionUser: req.session.user });
             });
 
         }).catch(error => {
@@ -152,8 +145,7 @@ module.exports = function (app, usersRepository, friendsRepository) {
            requests.forEach(request => {
                if(request.sender == req.session.user)
                    friendEmails.push(request.receiver);
-               else
-                   friendEmails.push(request.sender);
+               else friendEmails.push(request.sender);
            });
 
            filter = {email: {$in: friendEmails}};
@@ -172,7 +164,8 @@ module.exports = function (app, usersRepository, friendsRepository) {
                let response = {
                    friends: result.users,
                    pages: pages,
-                   currentPage: page
+                   currentPage: page,
+                   sessionUser: req.session.user
                }
 
                res.render('user/friends.twig', response);
