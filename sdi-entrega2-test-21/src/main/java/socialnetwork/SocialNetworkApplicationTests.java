@@ -30,7 +30,7 @@ class SocialNetworkApplicationTests {
 
 
     //Sara
-    static String Geckodriver = "D:\\UNI\\3º\\2º cuatri\\SDI\\Lab\\sesion05\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
+    //static String Geckodriver = "D:\\UNI\\3º\\2º cuatri\\SDI\\Lab\\sesion05\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
 
     //Diego
     //static String Geckodriver = "C:\\Users\\dimar\\Desktop\\sdi\\PL-SDI-Sesión5-material\\geckodriver-v0.30.0-win64.exe";
@@ -404,6 +404,8 @@ class SocialNetworkApplicationTests {
         elementos += PO_UserListView.countUsersOnPage(driver, 2);
         elementos += PO_UserListView.countUsersOnPage(driver, 3);
         elementos += PO_UserListView.countUsersOnPage(driver, 4);
+        elementos += PO_UserListView.countUsersOnPage(driver, 5);
+        elementos += PO_UserListView.countUsersOnPage(driver, 6);
 
         // all users but the deleted ones and the admin and logged in users
         Assertions.assertEquals(getNumberOfUsers() - (1 + numOfAdmins), elementos);
@@ -637,10 +639,13 @@ class SocialNetworkApplicationTests {
     @Order(23)
     void PR23() {
         PO_LoginView.login(driver, "user01@email.com", "user01");
-        driver.findElement(By.id("friendList")).click();
+        driver.findElement(By.id("dropdownFriends")).click();
+        driver.findElement(By.id("listFriendsOption")).click();
+
+        final int numOfUser01Friends = 4;
 
         List<WebElement> friends = driver.findElements(By.cssSelector("#tableFriends tbody tr"));
-        Assertions.assertEquals(2, friends.size());
+        Assertions.assertEquals(numOfUser01Friends, friends.size());
     }
 
     /**
