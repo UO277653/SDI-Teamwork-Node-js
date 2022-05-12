@@ -227,45 +227,4 @@ module.exports = function (app, usersRepository, friendsRepository) {
   });
 
 
-
-  /*
-  app.get('/users/user/:id', function (req, res) {
-    let filter = {_id: ObjectId(req.params.id)};
-    usersRepository.findUser(filter, {}).then(user => {
-      if (user == null){
-        res.redirect("/users");
-      } else {
-        console.log("user found! "+ user);
-        res.render("user/single-user.twig", {user: user, isFriend: false});
-      }
-    }).catch(error => {
-      res.redirect("/users");
-    })
-  });*/
-
-  app.get('/users/user/:id', function (req, res) {
-
-    let filter = {_id: ObjectId(req.params.id)};
-    usersRepository.findUser(filter, {}).then(user => {
-      if (user == null){
-        res.redirect("/users");
-      } else {
-
-        let friendFilter = { // Requests sent to or received by our user
-          status: "ACCEPTED",
-          $or:[
-            {sender: req.session.user, receiver: user.email},
-            {sender: user.email, receiver: req.session.user}
-          ]
-        };
-        friendsRepository.findRequest(friendFilter, {}).then(friendRequest => {
-          res.render("user/single-user.twig", {user: user, isFriend: friendRequest != null, session:req.session.user});
-        }).catch(error => {
-          res.render("user/single-user.twig", {user: user, isFriend: false, session:req.session.user});
-        });
-      }
-    }).catch(error => {
-      res.redirect("/users");
-    })
-  });
 }
