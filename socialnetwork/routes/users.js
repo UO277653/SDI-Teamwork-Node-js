@@ -228,9 +228,9 @@ module.exports = function (app, usersRepository, friendsRepository) {
           ]
         };
         friendsRepository.findRequest(friendFilter, {}).then(friendRequest => {
-          res.render("user/single-user.twig", {user: user, isFriend: friendRequest != null});
+          res.render("user/single-user.twig", {user: user, isFriend: friendRequest != null}); // TODO: Cambiar esto
         }).catch(error => {
-          res.render("user/single-user.twig", {user: user, isFriend: false});
+          res.render("user/single-user.twig", {user: user, isFriend: false}); // TODO: Cambiar esto
         });
       }
     }).catch(error => {

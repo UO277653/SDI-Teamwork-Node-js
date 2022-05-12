@@ -25,6 +25,7 @@
                 <th scope="col">Email</th>
                 <th scope="col">Name</th>
                 <th scope="col">Surname</th>
+                <th scope="col">Friends</th>
             </tr>
             </thead>
             <tbody>
@@ -33,6 +34,23 @@
                     <td>{{ user.email }}</td>
                     <td>{{ user.name }}</td>
                     <td>{{ user.surname }}</td>
+                    <td>
+                        {% if isFriend %}
+                            <p>Amigos</p>
+                        {% else %}
+                            <form class="form-horizontal" method="post" action="/friends/request/{{ user._id }}" >
+                                <div class="form-group">
+                                    <div class="col-sm-offset-2 col-sm-10">
+                                        <button type="submit" class="btn btn-primary" id="addFriendBtn">+ Add Friend</button>
+                                    </div>
+                                </div>
+                            </form>
+                            <!--
+                <a class="btn btn-primary pull-right" href="/friends/request/{{ user._id }}">Send Request</a>
+                -->
+                        {% endif %}
+                    </td>
+
                 </tr>
             {% endfor %}
             </tbody>
