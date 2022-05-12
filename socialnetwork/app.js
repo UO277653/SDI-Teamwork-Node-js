@@ -99,9 +99,9 @@ app.set('clave','abcdefg');
 app.set('crypto',crypto);
 
 //----------------------------- Logger --------------------------
-app.use(logger('common', {
-  stream: fs.createWriteStream('logs.txt')
-}));
+// app.use(logger('common', {
+//   stream: fs.createWriteStream('logs.txt')
+// }));
 // app.use(logger('dev'));
 //
 // app.use(express.json());
