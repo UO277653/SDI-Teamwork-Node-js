@@ -30,7 +30,7 @@ module.exports = function (app, usersRepository, friendsRepository) {
         })
     }
 
-    app.get('/friends/list', function (req, res) {
+    app.get('/request/list', function (req, res) {
 
         let filter = { // Requests sent to or received by our user
             $or:[

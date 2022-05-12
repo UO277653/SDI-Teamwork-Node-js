@@ -45,7 +45,11 @@ app.use(function(req, res, next) {
 
 const userSessionRouter = require("./routes/userSessionRouter");
 app.use("/users", userSessionRouter);
+app.use("/publications/add", userSessionRouter);
+app.use("/publications/listown", userSessionRouter);
 app.use("/friends", userSessionRouter);
+app.use("/request/list", userSessionRouter);
+
 
 const adminUserRouter = require("./routes/adminUserRouter");
 app.use("/admin/list", adminUserRouter);
