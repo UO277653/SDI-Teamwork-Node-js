@@ -73,11 +73,8 @@ module.exports = function (app, messagesRepository, usersRepository, friendsRepo
 
     app.put("/api/v1.0/messages/setAsRead/:id", function(req, res){
         try {
-            //let userName1;
-            //let id = req.params.id;
-
-            let userName1 = "prueba1@prueba1.com";
-            let id = "6279287bebaa0e07720075b4";
+            let userName1 = req.body.user;
+            let id = req.params.id;
 
             let filter = {
                 sender: userName1,
