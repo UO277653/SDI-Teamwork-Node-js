@@ -3,7 +3,7 @@ const userSessionRouter = express.Router();
 userSessionRouter.use(function(req, res, next) {
     console.log("routerUsuarioSession");
     if ( req.session.user || req.originalUrl.includes("/users/login") || req.originalUrl.includes("/users/signup") ) {
-// dejamos correr la petición
+        // dejamos correr la petición
         next();
     } else {
         console.log("va a: " + req.originalUrl);
