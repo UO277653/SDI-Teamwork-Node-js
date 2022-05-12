@@ -81,7 +81,7 @@ module.exports = function (app, usersRepository, friendsRepository) {
   
   app.get('/users/signup', function (req, res) {
     console.log("Access to signup form")
-    res.render("signup.twig", {session:req.session.user});
+    res.render("signup.twig", {sessionUser:req.session.user});
   });
 
   app.post('/users/signup', function (req, res) {
@@ -180,7 +180,7 @@ module.exports = function (app, usersRepository, friendsRepository) {
   }
 
   app.get('/users/login', function (req, res) {
-    res.render("login.twig", {session: req.session});
+    res.render("login.twig", {sessionUser: req.session.user});
   })
 
   app.post('/users/login', function (req, res) {
@@ -224,7 +224,6 @@ module.exports = function (app, usersRepository, friendsRepository) {
   app.get('/users/logout', function (req, res) {
     console.log("USER LOGGING OUT: " + req.session.user);
     req.session.user = null;
-    console.log(res); // Si se comenta esta línea, los tests de login-logout-login no pasan
     res.redirect("/users/login" +
         "?message=User successfully logged out"+
         "&messageType=alert-success");
