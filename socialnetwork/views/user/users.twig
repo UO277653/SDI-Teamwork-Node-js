@@ -1,5 +1,5 @@
 {% extends "layout.twig" %}
-{% block title %} Usuarios – Social Network {% endblock %}
+{% block title %} Users – Social Network {% endblock %}
 {% block main_container %}
     <!-- Búsqueda -->
     <div class="row">
@@ -7,7 +7,7 @@
             <form method="get" action="/users">
                 <div class="input-group col-xs-8 col-sm-6 col-md-4 col-lg-5 pull-right">
                     <input id="search" type="text" class="search-query form-control"
-                           placeholder="Buscar usuario" name="search"/>
+                           placeholder="Search user" name="search"/>
                     <span class="input-group-btn">
                         <button class="btn" type="submit" id="searchButton">
                          <span class="glyphicon glyphicon-search"></span>
@@ -17,14 +17,14 @@
             </form>
         </div>
     </div>
-    <h2>Usuarios</h2>
+    <h2>Users</h2>
     <div class="table-responsive">
         <table class="table table-hover" id="tableUsers">
             <thead>
             <tr>
                 <th scope="col">Email</th>
-                <th scope="col">Nombre</th>
-                <th scope="col">Apellidos</th>
+                <th scope="col">Name</th>
+                <th scope="col">Surname</th>
             </tr>
             </thead>
             <tbody>
