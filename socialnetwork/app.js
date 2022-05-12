@@ -3,6 +3,7 @@ let express = require('express');
 let path = require('path');
 let cookieParser = require('cookie-parser');
 let logger = require('morgan');
+let fs = require('fs');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -94,8 +95,12 @@ app.set('view engine', 'twig');
 app.set('clave','abcdefg');
 app.set('crypto',crypto);
 
-
+//----------------------------- Logger --------------------------
+app.use(logger('common', {
+  stream: fs.createWriteStream('logs.txt')
+}));
 app.use(logger('dev'));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
