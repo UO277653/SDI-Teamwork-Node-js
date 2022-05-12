@@ -466,6 +466,16 @@ class SocialNetworkApplicationTests {
 
 
 
+    private void clickOnSendRequestButton() {
+        // press send button (user01), with timeout to have time to load
+        List<WebElement> addButton = SeleniumUtils.waitLoadElementsBy(driver, "id", "addFriendBtn", 200);
+        addButton.get(0).click();
+
+        // Wait for invite button to update
+        SeleniumUtils.waitLoadElementsBy(driver, "text", "Pending...", 200);
+    }
+
+
     /**
      * W8. Enviar una invitación de amistad a un usuario
      * Desde el listado de usuarios de la aplicación, enviar una invitación de amistad a un usuario. Comprobar que la
@@ -484,15 +494,9 @@ class SocialNetworkApplicationTests {
 
         // log as user08
         PO_LoginView.login(driver, "user08@email.com", "user08");
+        clickOnSendRequestButton();
 
-        // press send button (user01), with timeout to have time to load
-        List<WebElement> addButton = SeleniumUtils.waitLoadElementsBy(driver, "id", "addFriendBtn", 200);
-        addButton.get(0).click();
-
-        // Wait for invite button to update
-        SeleniumUtils.waitLoadElementsBy(driver, "text", "Pending...", 200);
-
-        // logout user08
+        // logout user08 and send request
         driver.navigate().to("localhost:3000/users/logout");
         SeleniumUtils.waitLoadElementsBy(driver, "text", "User successfully logged out", 200);
 
@@ -559,54 +563,51 @@ class SocialNetworkApplicationTests {
     @Test
     @Order(21)
     void PR21() {
+        Bson filterSender8 = Filters.eq("sender", "user08@email.com");
+        Bson filterSender7 = Filters.eq("sender", "user07@email.com");
+        Bson filterStatus = Filters.eq("receiver", "user01@email.com");
 
-        // log as userA
-        PO_LoginView.login(driver, "hola@sara.es", "hola");
+        //delete all requests from user 08 and 07, just in case
+        requestsCollection.deleteMany(filterSender8);
+        requestsCollection.deleteMany(filterSender7);
 
-        // either go to a list of users, or to the id of a specified user
-        driver.navigate().to("http://localhost:3000/users/user/6279adc8060673b3938c7125");
 
-        // press send button (userA -> userB)
-        List<WebElement> sendButton = driver.findElements(By.id("sendBtn"));
-        sendButton.get(0).click();
+        // log as user08 and send request
+        PO_LoginView.login(driver, "user08@email.com", "user08");
+        clickOnSendRequestButton();
 
-        // logout userA (igual es x url)
+        // logout user08
         driver.navigate().to("localhost:3000/users/logout");
-        //PO_LoginView.logout(driver);
+        SeleniumUtils.waitLoadElementsBy(driver, "text", "User successfully logged out", 200);
 
-        // log as userC
-        PO_LoginView.login(driver, "hola@sara2.es", "hola");
+        // log as user07and send request
+        PO_LoginView.fillLoginForm(driver, "user07@email.com", "user07");
+        SeleniumUtils.waitLoadElementsBy(driver, "text", "User successfully logged in", 200);
+        clickOnSendRequestButton();
 
-        // either go to a list of users, or to the id of a specified user
-        driver.navigate().to("http://localhost:3000/users/user/6279adc8060673b3938c7125");
-
-        // press send button (userC -> userB)
-        sendButton = driver.findElements(By.id("sendBtn"));
-        sendButton.get(0).click();
-
-        // logout userC (igual es x url)
+        // logout user07
         driver.navigate().to("localhost:3000/users/logout");
-        //PO_LoginView.logout(driver);
+        SeleniumUtils.waitLoadElementsBy(driver, "text", "User successfully logged out", 200);
 
-        ////////////////////////
 
-        // log as userB
-        PO_LoginView.login(driver, "hola@sara.com", "hola");
-
-        // go to http://localhost:3000/friends/list
-        driver.navigate().to("http://localhost:3000/friends/list");
+        // log as user01
+        PO_LoginView.fillLoginForm(driver, "user01@email.com", "user01");
+        SeleniumUtils.waitLoadElementsBy(driver, "text", "User successfully logged in", 200);
 
         int requests = 0;
         requests += PO_RequestListView.countRequestsOnPage(driver, 0);
 
-        // check that userA and userC's invite is there
-        //SeleniumUtils.textIsPresentOnPage(driver, "hola@sara.es");
-        List<WebElement> acceptButton = driver.findElements(By.id("acceptBtn"));
-        acceptButton.get(0).click();
+        // check that user08's invite is there (and accept it or not), we'll do it by checking if the email of user08 is on page
+        SeleniumUtils.waitLoadElementsBy(driver, "text", "user08@email.com", 10);
+        SeleniumUtils.textIsPresentOnPage(driver, "user08@email.com");
+        SeleniumUtils.textIsPresentOnPage(driver, "user07@email.com");
 
-        // we could do an assert counting the requests on the page
+        // Assert counting the requests on the page
         Assertions.assertEquals(2, requests);
 
+        // delete created friendship for next test
+        requestsCollection.deleteOne(Filters.and(filterSender8, filterStatus));
+        requestsCollection.deleteOne(Filters.and(filterSender7, filterStatus));
     }
 
 
