@@ -43,7 +43,7 @@ module.exports = function (app, usersRepository, friendsRepository) {
                 tuples.push(tuple);
             };
             _friendsListGenerateTuples(req.session.user, requests, 0, tupleCallback, () => {
-                res.render("user/friendRequests.twig", {possibleFriends: tuples});
+                res.render("user/friendRequests.twig", {possibleFriends: tuples, sessionUser: req.session.user });
             });
 
         }).catch(error => {
@@ -165,7 +165,7 @@ module.exports = function (app, usersRepository, friendsRepository) {
                    friends: result.users,
                    pages: pages,
                    currentPage: page,
-                   session:req.session.user
+                   sessionUser: req.session.user
                }
 
                res.render('user/friends.twig', response);

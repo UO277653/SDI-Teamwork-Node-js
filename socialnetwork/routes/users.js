@@ -68,7 +68,7 @@ module.exports = function (app, usersRepository, friendsRepository) {
           listedUsers: listedUsers,
           pages: pages,
           currentPage: page,
-          session: req.session.user
+          sessionUser: req.session.user
         }
         res.render('user/users.twig', response);
       });
