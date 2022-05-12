@@ -43,6 +43,10 @@ app.use(function(req, res, next) {
   next();
 });
 
+const userSessionRouter = require("./routes/userSessionRouter");
+app.use("/users", userSessionRouter);
+app.use("/friends", userSessionRouter);
+
 const adminUserRouter = require("./routes/adminUserRouter");
 app.use("/admin/list", adminUserRouter);
 app.use("/admin/delete", adminUserRouter);
