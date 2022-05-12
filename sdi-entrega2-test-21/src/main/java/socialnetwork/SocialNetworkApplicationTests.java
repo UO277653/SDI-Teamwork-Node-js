@@ -754,7 +754,7 @@ class SocialNetworkApplicationTests {
 
         driver.navigate().to("localhost:3000/publications/list/" + friend2Email);
 
-        Assertions.assertTrue(driver.getPageSource().contains("test"));
+        Assertions.assertTrue(driver.getPageSource().contains("user05@email.com"));
 
     }
 
