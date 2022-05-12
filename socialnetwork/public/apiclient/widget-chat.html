@@ -1,0 +1,89 @@
+<div id="widget-chat" >
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>Author</th>
+            <th>Date</th>
+            <th>Text</th>
+            <th class="col-md-1"></th>
+        </tr>
+        </thead>
+        <tbody id="chatTableBody"></tbody>
+    </table>
+
+    <div class="form-group">
+        <label class="control-label col-sm-2" for="message">Mensaje:</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" name="message"
+                   placeholder="Mensaje..." id="message" />
+        </div>
+    </div>
+    <div class="col-sm-offset-2 col-sm-10">
+        <button type="button" class="btn btn-primary" id="boton-add"
+                onclick="addMessage()">Enviar</button>
+    </div>
+</div>
+
+<script>
+
+    function loadChat() {
+        $.ajax({
+            url: URLbase + "/messages/conversation",
+            type: "POST",
+            async: false,
+            data: {userName1: "prueba1@prueba1.com",
+                userName2: "prueba2@prueba2.com"},
+            dataType: 'json',
+            headers: {"token": token},
+            success: function (response) {
+                let messages = response.result;
+                updateChatTable(messages);
+            },
+            error: function (error) {
+                $("#main-container").load("widget-login.html");
+            }
+        });
+    }
+
+    function updateChatTable(chat) {
+        $("#chatTableBody").empty(); // Vaciar la tabla
+        for (i = 0; i < chat.length; i++) {
+
+            $("#chatTableBody").append(
+                "<tr>" +
+                "<td>" + chat[i].sender + "</td>" +
+                "<td>" + chat[i].date + "</td>" +
+                "<td>" + chat[i].text + "</td>" +
+
+                "</tr>");
+        }
+    }
+
+    function addMessage( ) {
+        $.ajax({
+            url: URLbase + "/messages/add",
+            type: "POST",
+            data: {
+                sender: user,
+                receiver: Cookies.get('receiver'),
+                text: $("#message").val()
+            },
+            dataType: 'json',
+            headers: {"token": token},
+            success: function (response) {
+                document.getElementById("message").value = "";
+                loadChat();
+            },
+            error: function (error) {
+                $("#main-container").load("widget-login.html");
+            }
+        });
+    }
+
+    setInterval(function() {
+        (loadChat())
+    }, 5000);
+
+
+    loadChat();
+</script>

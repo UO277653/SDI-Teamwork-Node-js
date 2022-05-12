@@ -43,15 +43,19 @@ app.use(function(req, res, next) {
   next();
 });
 
+const userSessionRouter = require("./routes/userSessionRouter");
+app.use("/users", userSessionRouter);
+app.use("/friends", userSessionRouter);
 
 const adminUserRouter = require("./routes/adminUserRouter");
 app.use("/admin/list", adminUserRouter);
 app.use("/admin/delete", adminUserRouter);
 
 const userTokenRouter = require("./routes/userTokenRouter");
-app.use("/api/messages/add", userTokenRouter);
-app.use("/api/messages/conversation", userTokenRouter);
-app.use("/api/messages/setAsRead/:id", userTokenRouter);
+app.use("/api/v1.0/messages/add", userTokenRouter);
+//app.use("/api/v1.0/messages/conversation", userTokenRouter);
+app.use("/api/v1.0/messages/setAsRead/:id", userTokenRouter);
+app.use("/api/v1.0/friends/list", userTokenRouter);
 
 
 //--------------------------Repositories----------------------------------------

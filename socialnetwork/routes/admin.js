@@ -12,7 +12,7 @@ module.exports = function (app, usersRepository, friendsRepository, publications
     app.get('/admin/list', function (req, res) {
 
         usersRepository.getUsersAdmin({}, {}).then(users => {
-            res.render('admin/users.twig', {users: users});
+            res.render('admin/users.twig', {users: users, session: req.session.user});
         }).catch(error => {
             res.send("Se ha producido un error al listar los usuarios: " + error)
         })
