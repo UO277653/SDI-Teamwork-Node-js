@@ -1035,7 +1035,9 @@ class SocialNetworkApplicationTests {
         SeleniumUtils.waitLoadElementsBy(driver, "id", "user01@email.com",30);
         SeleniumUtils.waitLoadElementsBy(driver, "id", "message1user01@email.com",30);
 
-        Assertions.assertTrue(driver.getPageSource().contains("Read"));
+        driver.findElement(By.id("message1user02@email.com")).click();
+
+        Assertions.assertTrue(driver.getPageSource().contains("read"));
 
 
     }
@@ -1087,6 +1089,8 @@ class SocialNetworkApplicationTests {
 
         SeleniumUtils.waitLoadElementsBy(driver, "id", "user02@email.com",30);
         SeleniumUtils.waitLoadElementsBy(driver, "id", "message1user01@email.com",30);
+
+        Assertions.assertTrue(driver.getPageSource().contains("Unread"));
 
     }
 
