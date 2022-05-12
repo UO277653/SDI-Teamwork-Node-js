@@ -26,9 +26,9 @@ module.exports = function (app, publicationsRepository, friendsRepository) {
         else{
 
             publicationsRepository.insertPublication(publication).then(publicationId =>{
-                res.send("La publicación ha sido añadida");
+                res.send("The publication has been added");
             }).catch(error => {
-                res.send("Error al insertar la publicación");
+                res.send("Error at inserting publication");
             })
         }
 
@@ -96,11 +96,11 @@ module.exports = function (app, publicationsRepository, friendsRepository) {
                     });
 
                 } else {
-                    res.send("No tienes permiso para ver las publicaciones de este usuario");
+                    res.send("You dont have permission to see the publications of this user");
                 }
             }
             else{
-                res.send("No tienes permiso para ver las publicaciones de este usuario");
+                res.send("You dont have permission to see the publications of this user");
             }
         });
 

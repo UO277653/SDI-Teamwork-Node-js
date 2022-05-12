@@ -672,7 +672,7 @@ class SocialNetworkApplicationTests {
         WebElement addButton = driver.findElement(By.id("add"));
         addButton.click();
 
-        Assertions.assertTrue(driver.getPageSource().contains("La publicación ha sido añadida"));
+        Assertions.assertTrue(driver.getPageSource().contains("The publication has been added"));
 
     }
 
@@ -754,7 +754,7 @@ class SocialNetworkApplicationTests {
 
         driver.navigate().to("localhost:3000/publications/list/prueba1@prueba1.com");
 
-        Assertions.assertTrue(driver.getPageSource().contains("No tienes permiso para ver las publicaciones de este usuario"));
+        Assertions.assertTrue(driver.getPageSource().contains("You dont have permission to see the publications of this user"));
 
     }
 
